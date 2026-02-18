@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DineAt - Premium Restaurant Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            color: #ffffff !important;
+            overflow-x: hidden;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        .hero-section {
+            text-align: center;
+            padding: 80px 20px;
+            position: relative;
+        }
+        
+        .hero-text h1 { 
+            font-size: 4rem; 
+            margin-bottom: 20px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .hero-text p { 
+            font-size: 1.4rem; 
+            opacity: 0.9; 
+            margin-bottom: 30px;
+            font-weight: 300;
+            animation: fadeInUp 1s ease 0.2s;
+            animation-fill-mode: both;
+        }
+        
+        .hero-visual {
+            margin-top: 60px;
+            position: relative;
+        }
+        
+        .floating-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .card-1 { animation-delay: 0s; }
+        .card-2 { animation-delay: 1s; }
+        .card-3 { animation-delay: 2s; }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .card i {
+            font-size: 2.5rem;
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+        
+        .card span {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .features { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+            gap: 30px; 
+            margin: 80px 0;
+            padding: 0 20px;
+        }
+        
+        .feature { 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 20px; 
+            padding: 40px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .feature:hover { 
+            transform: translateY(-15px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .feature i { 
+            font-size: 3.5rem; 
+            color: #ffd700; 
+            margin-bottom: 25px; 
+        }
+        
+        .feature h3 { 
+            font-size: 1.8rem; 
+            margin-bottom: 20px; 
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .feature p { 
+            color: rgba(255,255,255,0.9); 
+            line-height: 1.8; 
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255,215,0,0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255,215,0,0.4);
+            background: linear-gradient(135deg, #ffed4e, #ffd700);
+        }
+        
+        .tech-stack { 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 20px; 
+            padding: 40px; 
+            margin: 60px 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .tech-stack h4 { 
+            color: #ffffff; 
+            margin-bottom: 25px; 
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        
+        .tech-tags { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+            justify-content: center;
+        }
+        
+        .tech-tag { 
+            background: rgba(255,215,0,0.2); 
+            color: #ffffff; 
+            padding: 10px 20px; 
+            border-radius: 25px; 
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .footer { 
+            text-align: center; 
+            color: #ffffff; 
+            margin-top: 80px;
+            padding: 40px 20px;
+        }
+        
+        .footer a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-text h1 { font-size: 2.5rem; }
+            .hero-text p { font-size: 1.2rem; }
+            .floating-cards { flex-direction: column; align-items: center; }
+            .features { grid-template-columns: 1fr; padding: 0 10px; }
+            .feature { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero-section">
+        <div class="hero-text">
+            <h1>🍽️ DineAt</h1>
+            <p>Premium Restaurant Management System</p>
+            <a href="https://github.com/GOKUL-1405/DineAtofficial" class="btn-primary">
+                <i class="fas fa-code"></i>
+                View Source Code
+            </a>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-cards">
+                <div class="card card-1">
+                    <i class="fas fa-utensils"></i>
+                    <span>DineAt</span>
+                </div>
+                <div class="card card-2">
+                    <i class="fas fa-star"></i>
+                    <span>Premium</span>
+                </div>
+                <div class="card card-3">
+                    <i class="fas fa-heart"></i>
+                    <span>Quality</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-utensils"></i>
+                <h3>Food Ordering</h3>
+                <p>Browse menu, customize orders, and track delivery in real-time. Support for multiple payment methods including UPI, cards, and cash on delivery.</p>
+                <a href="https://github.com/GOKUL-1405/DineAtofficial" class="btn-primary">View Source Code</a>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-users"></i>
+                <h3>User Management</h3>
+                <p>Complete customer profiles with order history, preferences, and loyalty programs. Admin dashboard for staff management.</p>
+                <a href="https://github.com/GOKUL-1405/DineAtofficial" class="btn-primary">View Source Code</a>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-credit-card"></i>
+                <h3>Payment Processing</h3>
+                <p>Secure payment gateway with multiple options. UPI QR code generation, card processing, and digital wallet support.</p>
+                <a href="https://github.com/GOKUL-1405/DineAtofficial" class="btn-primary">View Source Code</a>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-robot"></i>
+                <h3>AI Chatbot</h3>
+                <p>Intelligent assistant powered by Google Gemini for customer support, order help, and restaurant information.</p>
+                <a href="https://github.com/GOKUL-1405/DineAtofficial" class="btn-primary">View Source Code</a>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-chart-line"></i>
+                <h3>Analytics Dashboard</h3>
+                <p>Real-time order tracking, revenue analytics, kitchen management, and comprehensive reporting system.</p>
+                <a href="https://github.com/GOKUL-1405/DineAtofficial" class="btn-primary">View Source Code</a>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>Mobile Responsive</h3>
+                <p>Modern, responsive design that works perfectly on all devices. Progressive Web App capabilities included.</p>
+                <a href="https://github.com/GOKUL-1405/DineAtofficial" class="btn-primary">View Source Code</a>
+            </div>
+        </div>
+
+        <div class="tech-stack">
+            <h4>🛠️ Technology Stack</h4>
+            <div class="tech-tags">
+                <span class="tech-tag">Django 6.0</span>
+                <span class="tech-tag">Python 3.11</span>
+                <span class="tech-tag">MySQL</span>
+                <span class="tech-tag">HTML5/CSS3</span>
+                <span class="tech-tag">JavaScript</span>
+                <span class="tech-tag">Google Gemini AI</span>
+                <span class="tech-tag">Bootstrap</span>
+                <span class="tech-tag">QR Code Generation</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 Built with Django, powered by AI, and ready for deployment!</p>
+            <p><strong>GitHub:</strong> <a href="https://github.com/GOKUL-1405/DineAtofficial">GOKUL-1405/DineAtofficial</a></p>
+        </div>
+    </div>
+</body>
+</html>
