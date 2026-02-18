@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.id }} - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #233D4C !important;
+        color: #000000;
+    }
+
+    .detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 100px 2rem 3rem;
+    }
+
+    .detail-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 25px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+
+    .header-row h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #000000;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .meta-item {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 16px;
+        padding: 1rem 1.25rem;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .meta-item .label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.65);
+        margin-bottom: 0.25rem;
+    }
+
+    .meta-item .value {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #000000;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+    }
+
+    .data-table thead th {
+        padding: 1rem 1.25rem;
+        text-align: left;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: rgba(0, 0, 0, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .data-table tbody tr {
+        background: rgba(255, 255, 255, 0.95);
+        transition: all 0.2s ease;
+    }
+
+    .data-table tbody td {
+        padding: 1.1rem 1.25rem;
+        color: #000000;
+        font-weight: 500;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .data-table tbody tr td:first-child {
+        border-left: 1px solid rgba(0, 0, 0, 0.06);
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+    }
+
+    .data-table tbody tr td:last-child {
+        border-right: 1px solid rgba(0, 0, 0, 0.06);
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="header-row">
+            <div>
+                <h1>Order #{{ order.id }}</h1>
+            </div>
+            <div class="actions">
+                <a href="{% url 'dashboard:admin_dashboard' %}" class="btn btn-secondary">Back</a>
+            </div>
+        </div>
+
+        <div class="meta-grid">
+            <div class="meta-item">
+                <div class="label">Customer</div>
+                <div class="value">{{ order.customer.username }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="label">Table</div>
+                <div class="value">{{ order.table|default:"N/A" }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="label">Status</div>
+                <div class="value">{{ order.get_status_display }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="label">Payment</div>
+                <div class="value">{{ order.get_payment_method_display }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="label">Total</div>
+                <div class="value">₹{{ order.total_amount }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="label">Time</div>
+                <div class="value">{{ order.created_at|date:"d M Y, h:i A" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-card">
+        <h2 style="margin: 0 0 1.5rem; font-size: 1.5rem; font-weight: 800; color: #000000;">Ordered Items</h2>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th class="text-right">Qty</th>
+                        <th class="text-right">Price</th>
+                        <th class="text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order_items %}
+                    <tr>
+                        <td>{{ item.menu_item.name }}</td>
+                        <td class="text-right">{{ item.quantity }}</td>
+                        <td class="text-right">₹{{ item.price }}</td>
+                        <td class="text-right">₹{{ item.subtotal }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No items found.</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3" class="text-right"><strong>Total</strong></td>
+                        <td class="text-right"><strong>₹{{ order.total_amount }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {% if order.special_instructions %}
+        <div style="margin-top: 1.5rem;">
+            <div style="font-weight: 800; margin-bottom: 0.5rem;">Special Instructions</div>
+            <div style="background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0,0,0,0.08); padding: 1rem 1.25rem; border-radius: 16px;">
+                {{ order.special_instructions }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

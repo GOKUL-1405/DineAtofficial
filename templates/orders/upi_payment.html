@@ -1,0 +1,511 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}UPI Payment - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #233D4C !important;
+        color: white;
+    }
+
+    .upi-payment-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+    }
+
+    .upi-payment-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .upi-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .upi-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 0 1rem;
+    }
+
+    .upi-header .amount {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #10b981;
+        background: rgba(16, 185, 129, 0.2);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        display: inline-block;
+    }
+
+    .qr-section {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .qr-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .qr-image {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .qr-image img {
+        width: 200px;
+        height: 200px;
+        display: block;
+    }
+
+    .qr-info {
+        text-align: left;
+        max-width: 300px;
+    }
+
+    .qr-info h3 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0 0 1rem;
+    }
+
+    .qr-info .upi-details {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .qr-info .upi-details p {
+        margin: 0.5rem 0;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+    }
+
+    .qr-info .upi-details strong {
+        color: #10b981;
+        font-weight: 700;
+    }
+
+    .upi-id-display {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin: 1rem 0;
+        font-family: monospace;
+        font-size: 1rem;
+        color: #10b981;
+        text-align: center;
+        word-break: break-all;
+    }
+
+    .copy-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .copy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    .copy-btn:active {
+        transform: translateY(0);
+    }
+
+    .instructions {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .instructions h3 {
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 800;
+        margin: 0 0 1rem;
+        text-align: center;
+    }
+
+    .instructions ol {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        padding-left: 1.5rem;
+    }
+
+    .instructions li {
+        margin-bottom: 0.75rem;
+    }
+
+    .status-section {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .status-indicator.waiting {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .status-indicator.paid {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-indicator.processing {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .pulse {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .order-summary {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .order-summary h3 {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin: 0 0 1rem;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+        font-weight: 700;
+        color: #10b981;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .upi-payment-card {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+
+        .upi-header h1 {
+            font-size: 2rem;
+        }
+
+        .qr-container {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .qr-info {
+            text-align: center;
+            max-width: 100%;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="upi-payment-page">
+    <div class="container">
+        <div class="upi-payment-card">
+            <div class="upi-header">
+                <h1>📱 UPI Payment</h1>
+                <div class="amount">₹{{ total_amount }}</div>
+            </div>
+
+            {% if upi_payment_info %}
+            <div class="qr-section">
+                <div class="qr-container">
+                    <div class="qr-image">
+                        {% if upi_payment_info.qr_code_path %}
+                            <img src="/media/{{ upi_payment_info.qr_code_path }}" alt="UPI QR Code" />
+                        {% else %}
+                            <img src="https://quickchart.io/qr?size=200&text={{ upi_payment_info.upi_string|urlencode }}" alt="UPI QR Code" />
+                        {% endif %}
+                    </div>
+                    <div class="qr-info">
+                        <h3>Scan & Pay</h3>
+                        <div class="upi-details">
+                            <p><strong>UPI ID:</strong> {{ upi_payment_info.upi_id }}</p>
+                            <p><strong>Merchant:</strong> {{ upi_payment_info.merchant_name }}</p>
+                            <p><strong>Amount:</strong> ₹{{ total_amount }}</p>
+                        </div>
+                        <div class="upi-id-display">
+                            {{ upi_payment_info.upi_id }}
+                        </div>
+                        <button class="copy-btn" onclick="copyUpiId()">
+                            📋 Copy UPI ID
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="status-section">
+                <div class="status-indicator waiting" id="payment-status">
+                    <span class="pulse"></span>
+                    Waiting for Payment
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h3>📋 How to Pay</h3>
+                <ol>
+                    <li>Open any UPI app (GPay, PhonePe, Paytm, etc.)</li>
+                    <li>Scan the QR code shown above</li>
+                    <li>Verify the payment details (₹{{ total_amount }})</li>
+                    <li>Complete the payment using your UPI PIN</li>
+                    <li>Payment will be automatically detected</li>
+                </ol>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="checkPaymentStatus()">
+                    🔍 Check Payment Status
+                </button>
+                <a href="{% url 'orders:cart' %}" class="btn btn-secondary">
+                    ← Back to Cart
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ upi_payment_info|json_script:"upi-payment-data" }}
+<script>
+    // UPI Payment Info from backend
+    let upiPaymentInfo = null;
+    const upiDataElement = document.getElementById('upi-payment-data');
+    if (upiDataElement) {
+        try {
+            upiPaymentInfo = JSON.parse(upiDataElement.textContent);
+        } catch (e) {
+            console.error('Error parsing UPI payment data:', e);
+        }
+    }
+
+    const paymentStatusUrl = "{{ payment_status_url|escapejs }}";
+    const upiMarkPaidUrl = "{{ upi_mark_paid_url|escapejs }}";
+    let pollingTimer = null;
+
+    function copyUpiId() {
+        if (upiPaymentInfo && upiPaymentInfo.upi_id) {
+            navigator.clipboard.writeText(upiPaymentInfo.upi_id).then(() => {
+                showToast('UPI ID copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy UPI ID:', err);
+                showToast('Failed to copy UPI ID', 'error');
+            });
+        }
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background: ${type === 'success' ? '#10b981' : '#ef4444'}; 
+            color: white; 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            z-index: 10000; 
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function updatePaymentStatus(status) {
+        const statusElement = document.getElementById('payment-status');
+        statusElement.className = 'status-indicator';
+        
+        switch(status) {
+            case 'paid':
+                statusElement.className += ' paid';
+                statusElement.innerHTML = '<span class="pulse"></span>Payment Received!';
+                stopPolling();
+                setTimeout(() => {
+                    window.location.href = "{% url 'orders:process_payment' %}";
+                }, 2000);
+                break;
+            case 'processing':
+                statusElement.className += ' processing';
+                statusElement.innerHTML = '<span class="pulse"></span>Processing Payment...';
+                break;
+            default:
+                statusElement.className += ' waiting';
+                statusElement.innerHTML = '<span class="pulse"></span>Waiting for Payment';
+        }
+    }
+
+    async function checkPaymentStatus() {
+        try {
+            const response = await fetch(paymentStatusUrl, { credentials: 'same-origin' });
+            const data = await response.json();
+            
+            if (data && data.ok) {
+                updatePaymentStatus(data.status);
+            } else {
+                showToast('Payment session expired', 'error');
+            }
+        } catch (error) {
+            console.error('Error checking payment status:', error);
+            showToast('Failed to check payment status', 'error');
+        }
+    }
+
+    function startPolling() {
+        stopPolling();
+        pollingTimer = setInterval(checkPaymentStatus, 3000); // Check every 3 seconds
+    }
+
+    function stopPolling() {
+        if (pollingTimer) {
+            clearInterval(pollingTimer);
+            pollingTimer = null;
+        }
+    }
+
+    // Start polling when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        startPolling();
+        
+        // Initial status check
+        checkPaymentStatus();
+    });
+
+    // Clean up polling when page unloads
+    window.addEventListener('beforeunload', function() {
+        stopPolling();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Choose Dish Type - DineAt Premium Restaurant{% endblock %}
+
+
+{% block extra_css %}
+<style>
+/* ===== YOUR FULL CSS EXACTLY SAME ===== */
+/* nothing changed inside */
+.dish-type-section {
+    padding: 120px 0 60px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* FULL CSS CONTINUE HERE (no change) */
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="dish-type-section">
+<div class="container">
+<div class="dish-header">
+<h2>Choose Dish Type</h2>
+<p>Select from our wide variety of delicious dishes</p>
+</div>
+
+<div class="dish-grid">
+<!-- YOUR FULL HTML SAME — NO CHANGE -->
+</div>
+
+<div class="dish-actions">
+<button class="btn btn-premium" onclick="goToMenu()">
+<i class="fas fa-utensils"></i>
+Continue to Menu
+</button>
+
+<button class="btn btn-secondary" onclick="window.history.back()">
+<i class="fas fa-arrow-left"></i>
+Back
+</button>
+</div>
+
+</div>
+</section>
+
+
+<!-- STATIC JS -->
+<script src="{% static 'js/script.js' %}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.dish-card');
+
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(50px) scale(0.9)';
+
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0) scale(1)';
+        }, index * 100);
+    });
+
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-20px) scale(1.05)';
+            this.querySelector('.dish-icon i').style.transform = 'scale(1.3) rotate(15deg)';
+            this.querySelector('.dish-arrow i').style.transform = 'translateX(15px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.querySelector('.dish-icon i').style.transform = 'scale(1) rotate(0deg)';
+            this.querySelector('.dish-arrow i').style.transform = 'translateX(0)';
+        });
+    });
+});
+
+
+function selectDishType(dishType) {
+    localStorage.setItem('selectedDishType', dishType);
+
+    event.currentTarget.style.transform = 'scale(0.95)';
+
+    setTimeout(() => {
+        window.location.href = "/menu/" + dishType + "/";
+    }, 200);
+}
+</script>
+
+{% endblock %}

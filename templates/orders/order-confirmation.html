@@ -1,0 +1,745 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmation - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #233D4C !important;
+        color: white;
+    }
+
+    .confirmation-section {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    /* Success Animation */
+    .confirmation-hero {
+        padding: 120px 0 80px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .success-animation {
+        position: relative;
+        margin-bottom: 3rem;
+        display: inline-block;
+    }
+
+    .success-circle {
+        width: 120px;
+        height: 120px;
+        background: #27ae60;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 40px rgba(39, 174, 96, 0.4);
+        position: relative;
+        z-index: 2;
+        animation: successPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .success-circle i {
+        font-size: 3rem;
+        color: white;
+        animation: checkmark 0.6s ease-out;
+    }
+
+    @keyframes successPop {
+        0% {
+            transform: scale(0);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes checkmark {
+        0% {
+            transform: scale(0) rotate(45deg);
+        }
+
+        100% {
+            transform: scale(1) rotate(0deg);
+        }
+    }
+
+    .success-rings {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
+    .ring {
+        position: absolute;
+        border: 2px solid rgba(39, 174, 96, 0.3);
+        border-radius: 50%;
+        animation: ringExpand 2s ease-out infinite;
+    }
+
+    .ring-1 {
+        width: 150px;
+        height: 150px;
+        margin-left: -75px;
+        margin-top: -75px;
+    }
+
+    .ring-2 {
+        width: 180px;
+        height: 180px;
+        margin-left: -90px;
+        margin-top: -90px;
+        animation-delay: 0.3s;
+    }
+
+    .ring-3 {
+        width: 210px;
+        height: 210px;
+        margin-left: -105px;
+        margin-top: -105px;
+        animation-delay: 0.6s;
+    }
+
+    @keyframes ringExpand {
+        0% {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+
+        100% {
+            transform: scale(1.2);
+            opacity: 0;
+        }
+    }
+
+    .main-title {
+        font-size: 4rem;
+        font-weight: 900;
+        color: white;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 3rem;
+    }
+
+    /* Order Summary */
+    .order-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .summary-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .summary-item:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .total-item {
+        background: rgba(231, 76, 60, 0.2);
+        border-color: rgba(231, 76, 60, 0.3);
+    }
+
+    .summary-icon {
+        width: 60px;
+        height: 60px;
+        background: #27ae60;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .summary-item:hover .summary-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .summary-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .summary-content h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-content p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .total-amount {
+        color: #e74c3c;
+        font-size: 1.5rem !important;
+        font-weight: 800 !important;
+    }
+
+    /* Timeline */
+    .timeline-section {
+        margin-bottom: 3rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .section-header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #27ae60;
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -2.5rem;
+        top: 0;
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .timeline-item.completed .timeline-dot {
+        background: #27ae60;
+        border-color: #27ae60;
+        box-shadow: 0 0 20px rgba(39, 174, 96, 0.5);
+    }
+
+    .timeline-item.active .timeline-dot {
+        background: #f39c12;
+        border-color: #f39c12;
+        box-shadow: 0 0 20px rgba(243, 156, 18, 0.5);
+        animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .timeline-dot i {
+        font-size: 1.2rem;
+        color: white;
+    }
+
+    .timeline-content {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-left: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .timeline-item:hover .timeline-content {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .timeline-content h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-content p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 0.8rem;
+    }
+
+    .time {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: rgba(39, 174, 96, 0.2);
+        color: #27ae60;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    /* Action Cards */
+    .action-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .action-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        background: #3498db;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-card:hover .action-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .action-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .action-content h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.8rem;
+    }
+
+    .action-content p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 1.5rem;
+    }
+
+    .action-btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .action-btn.primary {
+        background: #27ae60;
+        color: white;
+    }
+
+    .action-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .support-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .support-btn {
+        padding: 0.6rem 1.2rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .support-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .confirmation-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 5rem;
+    }
+
+    .ordered-items-section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 3rem;
+    }
+
+    .ordered-items-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .ordered-items-header h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: white;
+        margin: 0;
+    }
+
+    .ordered-items-table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 15px;
+    }
+
+    .ordered-items-table th,
+    .ordered-items-table td {
+        padding: 12px 14px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        color: white;
+    }
+
+    .ordered-items-table th {
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.85);
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .ordered-items-table tr:hover td {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .items-total-row td {
+        font-weight: 800;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="confirmation-section">
+    <div class="confirmation-hero">
+        <div class="hero-content">
+            <div class="success-animation">
+                <div class="success-circle">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="success-rings">
+                    <div class="ring ring-1"></div>
+                    <div class="ring ring-2"></div>
+                    <div class="ring ring-3"></div>
+                </div>
+            </div>
+
+            <h1 class="main-title">Order Confirmed!</h1>
+            <p class="hero-subtitle">Thank you for your order! We're preparing your delicious meal with care.</p>
+
+            <div class="order-summary">
+                <div class="summary-item">
+                    <div class="summary-icon">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Order Number</h3>
+                        <p>{{ order.order_number }}</p>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-icon">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Table</h3>
+                        <p>{% if order.table %}Table {{ order.table.table_number }}{% else %}-{% endif %}</p>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Estimated Time</h3>
+                        <p>25-30 minutes</p>
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Payment Method</h3>
+                        <p>{{ order.payment_method }}</p>
+                    </div>
+                </div>
+
+                <div class="summary-item total-item">
+                    <div class="summary-icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="summary-content">
+                        <h3>Total Amount</h3>
+                        <p class="total-amount">₹{{ order.total_amount }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="ordered-items-section">
+            <div class="ordered-items-header">
+                <h2>🧾 Ordered Items</h2>
+            </div>
+
+            <table class="ordered-items-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th class="text-right">Qty</th>
+                        <th class="text-right">Price</th>
+                        <th class="text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.menu_item.name }}</td>
+                        <td class="text-right">{{ item.quantity }}</td>
+                        <td class="text-right">₹{{ item.price }}</td>
+                        <td class="text-right">₹{{ item.subtotal }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No items found.</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="items-total-row">
+                        <td colspan="3" class="text-right">Total</td>
+                        <td class="text-right">₹{{ order.total_amount }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="confirmation-grid">
+            <div class="timeline-section">
+                <div class="section-header">
+                    <h2>🚀 Order Status</h2>
+                    <p>Track your order from kitchen to table</p>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item completed">
+                        <div class="timeline-dot">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Order Placed</h4>
+                            <p>Your order has been successfully placed</p>
+                            <span class="time">Just now</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item active">
+                        <div class="timeline-dot">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Kitchen Processing</h4>
+                            <p>Your order is being prepared</p>
+                            <span class="time">In progress</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Ready to Serve</h4>
+                            <p>Your food is ready for serving</p>
+                            <span class="time">Pending</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot">
+                            <i class="fas fa-concierge-bell"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Served</h4>
+                            <p>Your order will be served at your table</p>
+                            <span class="time">Pending</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions-section">
+                <div class="section-header">
+                    <h2>🎯 What's Next?</h2>
+                    <p>Continue your dining experience with DineAt</p>
+                </div>
+
+                <div class="action-cards">
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="action-content">
+                            <h3>Order More Items</h3>
+                            <p>Add more delicious items to your order</p>
+                            <a href="{% url 'orders:menu' %}" class="action-btn primary">
+                                <i class="fas fa-plus"></i>
+                                Order More
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="action-content">
+                            <h3>Back to Home</h3>
+                            <p>Return to the main menu</p>
+                            <a href="{% url 'main:index' %}" class="action-btn secondary">
+                                <i class="fas fa-home"></i>
+                                Go Home
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="action-content">
+                            <h3>Need Help?</h3>
+                            <p>Our support team is here to assist you</p>
+                            <div class="support-buttons">
+                                <a href="tel:+919876543210" class="support-btn">
+                                    <i class="fas fa-phone-alt"></i>
+                                    Call
+                                </a>
+                                <a href="mailto:support@dineat.com" class="support-btn">
+                                    <i class="fas fa-envelope"></i>
+                                    Email
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,1561 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Menu - DineAt Premium Restaurant{% endblock %}
+
+{% block extra_css %}
+<style>
+        /* Enhanced Menu Item Styles */
+        .menu-item {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 18px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            animation: slideInFromUp 0.6s ease-out;
+        }
+        
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: #1a365d;
+            transform: scaleX(0);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .menu-item::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.05);
+            transform: rotate(45deg) translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .menu-item:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .menu-item:hover::after {
+            transform: rotate(45deg) translateX(100%);
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 
+                0 15px 40px rgba(0,0,0,0.08),
+                0 5px 15px rgba(0,0,0,0.05),
+                inset 0 1px 0 rgba(65, 62, 62, 0.9);
+            animation: pulse 1s ease-in-out infinite;
+            border-color: rgba(102, 126, 234, 0.4);
+        }
+        
+        .menu-item-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            font-size: 2rem;
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 
+                0 6px 20px rgba(0,0,0,0.12),
+                0 3px 10px rgba(0,0,0,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(8px);
+        }
+        
+        .menu-item:hover .menu-item-icon {
+            transform: rotate(5deg) scale(1.1) translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.15),
+                0 4px 15px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        
+        .veg-item .menu-item-icon {
+            background: #00b894;
+            color: white;
+            border: 2px solid rgba(0, 184, 148, 0.3);
+        }
+        
+        .non-veg-item .menu-item-icon {
+            background: #e17055;
+            color: white;
+            border: 2px solid rgba(225, 112, 85, 0.3);
+        }
+        
+        .menu-item-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 
+                0 3px 10px rgba(0,0,0,0.15),
+                0 1px 5px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            animation: gentle-float 4s ease-in-out infinite;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        
+        
+        .veg-badge {
+            background: #00b894;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .non-veg-badge {
+            background: #e17055;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .menu-item-content {
+            flex: 1;
+        }
+        
+        .menu-item-header h3 {
+            margin: 0 0 0.6rem 0;
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: -0.5px;
+            color: #003681;
+        }
+        
+        .menu-type {
+            color: #e94560;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 1px 3px rgba(233, 69, 96, 0.2);
+        }
+        
+        .menu-item-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0.8rem 0;
+            text-shadow: 0 2px 4px rgba(0, 184, 148, 0.2);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .menu-item-price::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            color: black;
+            border-radius: 2px;
+            box-shadow: 0 1px 5px rgba(0, 184, 148, 0.3);
+        }
+        
+        .menu-item-description {
+            color: #2d3436;
+            margin: 0.8rem 0;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+        
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin: 0.8rem 0;
+            padding: 0.5rem 0.8rem;
+            
+            border-radius: 8px;
+            border: 1px solid #ffe0e0;
+        }
+        
+        .stars {
+            color: #fdcb6e;
+            font-size: 1rem;
+            text-shadow: 0 1px 3px rgba(253, 203, 110, 0.2);
+        }
+        
+        .rating span {
+            color: #e17055;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(225, 112, 85, 0.15);
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #1a365d, #2c5282);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-corporate);
+        }
+        
+        .btn-add::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transition: left 0.4s ease;
+        }
+        
+        .btn-add:hover::before {
+            left: 100%;
+        }
+        
+        .btn-add:hover {
+            background: linear-gradient(135deg, #2c5282, #3182ce);
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .btn-add:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+        
+        /* Category buttons */
+        .category-btn {
+            background: rgba(0, 11, 220, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--gray-300);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            color: var(--dark-text);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+        }
+        
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.6s ease;
+        }
+        
+        .category-btn:hover::before {
+            left: 100%;
+        }
+        
+        .category-btn:hover {
+            background: #f10505;
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.12),
+                0 5px 18px rgba(0,0,0,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, #1a365d, #2c5282);
+            color: white;
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: var(--shadow-corporate);
+        }
+        
+        .category-btn.active:hover {
+            background: linear-gradient(135deg, #2c5282, #3182ce);
+            box-shadow: 
+                0 15px 40px rgba(44, 82, 130, 0.4),
+                0 8px 25px rgba(44, 82, 130, 0.3),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        
+        /* Menu Header Styles */
+        .menu-section {
+            padding: 100px 0 50px;
+            min-height: 100vh;
+            color: #000000;
+            background: #233D4C;
+            position: relative;
+            overflow: hidden;
+        }
+        .menu-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+        }
+        
+        /* Black text styling for all elements */
+        .menu-section h1,
+        .menu-section h2,
+        .menu-section h3,
+        .menu-section h4,
+        .menu-section p,
+        .menu-section li,
+        .menu-section span,
+        .menu-section div {
+            color: white !important;
+            font-weight: 500;
+        }
+        
+        .menu-section h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color:white !important;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+        
+        .menu-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+        }
+        
+        .menu-section h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #000000 !important;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+        
+        .menu-section p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #000000 !important;
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+        
+        .menu-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+        
+        .table-info {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0.5rem 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .table-info span {
+            font-weight: 900;
+            color: #ffffff;
+            font-size: 1.4rem;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #ffffff;
+            font-style: italic;
+            margin: 0.5rem 0 1rem 0;
+            text-shadow: 0 1px 3px rgba(99, 110, 114, 0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .menu-item {
+                flex-direction: column;
+                text-align: center;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .menu-item-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .menu-item-header h3 {
+                font-size: 1.2rem;
+            }
+            
+            .menu-type {
+                font-size: 0.75rem;
+            }
+            
+            .menu-item-price {
+                font-size: 1.4rem;
+            }
+            
+            .menu-item-description {
+                font-size: 0.85rem;
+            }
+            
+            .rating {
+                padding: 0.4rem 0.6rem;
+            }
+            
+            .stars {
+                font-size: 0.9rem;
+            }
+            
+            .rating span {
+                font-size: 0.75rem;
+            }
+            .review h6 {
+                font-size: 0.75rem;
+                color: #000000;
+            }
+            .btn-add {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.8rem;
+            }
+            
+            .category-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.8rem;
+                margin: 0.3rem;
+            }
+            
+            .menu-header h1 {
+                font-size: 2rem;
+            }
+            
+            .table-info {
+                font-size: 1.1rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            /* Hamburger Menu Styles */
+            .hamburger {
+                display: block;
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 0.5rem;
+                z-index: 1000;
+            }
+
+            .hamburger .bar {
+                display: block;
+                width: 25px;
+                height: 3px;
+                margin: 5px auto;
+                transition: all 0.3s ease-in-out;
+                background-color: white;
+                border-radius: 2px;
+            }
+
+            .hamburger.active .bar:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            .hamburger.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active .bar:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+
+            /* Mobile Navigation */
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background-color: rgba(35, 61, 76, 0.95);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                padding: 2rem 0;
+                z-index: 999;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-menu li {
+                margin: 1rem 0;
+            }
+
+            .nav-link {
+                color: white !important;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+    <script>
+        // Enhanced menu animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectedTable = localStorage.getItem('selectedTable');
+            if (selectedTable) {
+                document.getElementById('selected-table').textContent = `Table ${selectedTable}`;
+            }
+            
+            // Menu item animations
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100 + (index * 100));
+            });
+            
+            // Category button animations
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            categoryBtns.forEach((btn, index) => {
+                btn.style.opacity = '0';
+                btn.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    btn.style.transition = 'all 0.5s ease';
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateX(0)';
+                }, 300 + (index * 50));
+            });
+        });
+        
+        // Hamburger Menu Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (hamburger && navMenu) {
+                hamburger.addEventListener('click', function() {
+                    hamburger.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+                
+                // Close mobile menu when clicking on a link
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        hamburger.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!hamburger.contains(event.target) && !navMenu.contains(event.target)) {
+                        hamburger.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+    
+    <style>
+        /* Navigation bar background color */
+        .navbar {
+            background-color: #233D4C !important;
+            padding: 0.4rem 0 !important;
+        }
+        
+        .nav-container {
+            padding: 0.4rem 2rem !important;
+        }
+        
+        /* Custom menu item height reduction */
+        .menu-item {
+            padding: 1rem !important;
+            min-height: auto !important;
+        }
+        
+        .menu-item-icon {
+            width: 50px !important;
+            height: 50px !important;
+            font-size: 1.5rem !important;
+        }
+        
+        /* Change text colors */
+        .menu-item-content h3 {
+            color: #1a365d !important;
+            font-weight: 700 !important;
+        }
+        
+        .menu-item-content .menu-type {
+            color: #4a5568 !important;
+        }
+        
+        .menu-item-price {
+            color: #e53e3e !important;
+            font-weight: 700 !important;
+        }
+        
+        .menu-item-description {
+            color: #2d3748 !important;
+        }
+        
+        .rating span {
+            color: #718096 !important;
+        }
+        
+        .rating h6 {
+            color: #000000 !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+
+  <section class="menu-section">
+            <div class="container">
+                <div class="menu-header">
+                    <h1 style="color: white; background: none;">🍽️ Our Premium Menu</h1>
+                    
+                    <h6 class="tagline" style="color: white;">✨ Discover our exquisite collection of culinary delights</h6>
+                    <div class="cart-indicator" style="background-color: #7c3aed; padding: 10px 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3);">
+                        <a href="{% url 'orders:cart' %}" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i>
+                            Cart 
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="menu-categories">
+                    
+                    <button  class="category-btn" onclick="filterMenu('veg')">
+                        <i class="fas fa-leaf"></i>
+                        Vegetarian
+                    </button>
+                    <button class="category-btn" onclick="filterMenu('non-veg')">
+                        <i class="fas fa-drumstick-bite"></i>
+                        Non-Vegetarian
+                    </button>
+                </div>
+                
+                <div class="menu-grid">
+                    <!-- Vegetarian Starters -->
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-cookie-bite"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Vegetable Samosa</h3>
+                                    <span class="menu-type">Starter • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3  class="menu-item-price" >₹120</h3>
+                            <p class="menu-item-description">Crispy pastry filled with spiced potatoes and peas, served with mint chutney</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.2) 245 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'vs1', name: 'Vegetable Samosa', price: 120, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-cheese"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Paneer Tikka</h3>
+                                    <span class="menu-type">Starter • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹180</h3>
+                            <p class="menu-item-description">Soft cottage cheese marinated in spices and grilled to perfection</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.6) 189 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'pt1', name: 'Paneer Tikka', price: 180, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-leaf"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Spring Rolls</h3>
+                                    <span class="menu-type">Starter • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹140</h3>
+                            <p class="menu-item-description">Crispy rolls filled with fresh vegetables and noodles</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.3) 156 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'sr1', name: 'Spring Rolls', price: 140, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Vegetarian Main Course -->
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-bowl-food"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Paneer Butter Masala</h3>
+                                    <span class="menu-type">Main Course • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹280</h3>
+                            <p class="menu-item-description">Soft cottage cheese cubes in creamy tomato gravy, perfect with naan</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.5) 312 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'pm1', name: 'Paneer Butter Masala', price: 280, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-pepper-hot"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Mushroom Masala</h3>
+                                    <span class="menu-type">Main Course • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹240</h3>
+                            <p class="menu-item-description">Fresh mushrooms cooked in aromatic spices and creamy gravy</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.4) 198 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'mm1', name: 'Mushroom Masala', price: 240, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-carrot"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Mixed Veg Curry</h3>
+                                    <span class="menu-type">Main Course • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹220</h3>
+                            <p class="menu-item-description">Assorted fresh vegetables cooked in traditional Indian spices</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.3) 167 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'mv1', name: 'Mixed Veg Curry', price: 220, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-seedling"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Palak Paneer</h3>
+                                    <span class="menu-type">Main Course • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹260</h3>
+                            <p class="menu-item-description">Cottage cheese cubes in rich spinach gravy with aromatic spices</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.6) 234 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'pp1', name: 'Palak Paneer', price: 260, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Non-Vegetarian Starters -->
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-drumstick-bite"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Chicken Tikka</h3>
+                                    <span class="menu-type">Starter • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹150</h3>
+                            <p class="menu-item-description">Tender chicken pieces marinated in yogurt and spices, grilled in tandoor</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.2) 189 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'ct1', name: 'Chicken Tikka', price: 150, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-fish"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Fish Fry</h3>
+                                    <span class="menu-type">Starter • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹180</h3>
+                            <p class="menu-item-description">Crispy fried fish marinated in special spices and herbs</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.7) 145 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'ff1', name: 'Fish Fry', price: 180, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-bacon"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Mutton Kebab</h3>
+                                    <span class="menu-type">Starter • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹220</h3>
+                            <p class="menu-item-description">Tender mutton pieces marinated in aromatic spices and grilled</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.5) 98 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'mk1', name: 'Mutton Kebab', price: 220, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Non-Vegetarian Main Course -->
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-fire"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Butter Chicken</h3>
+                                    <span class="menu-type">Main Course • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹320</h3>
+                            <p class="menu-item-description">Tender chicken in rich buttery tomato gravy</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.7) 428 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'nm1', name: 'Butter Chicken', price: 320, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-crow"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Chicken Biryani</h3>
+                                    <span class="menu-type">Main Course • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹280</h3>
+                            <p class="menu-item-description">Aromatic basmati rice cooked with tender chicken and exotic spices</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.8) 567 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'cb1', name: 'Chicken Biryani', price: 280, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-egg"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Egg Curry</h3>
+                                    <span class="menu-type">Main Course • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹180</h3>
+                            <p class="menu-item-description">Hard-boiled eggs cooked in spicy onion-tomato gravy</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.3) 234 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'ec1', name: 'Egg Curry', price: 180, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-hamburger"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Mutton Rogan Josh</h3>
+                                    <span class="menu-type">Main Course • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹380</h3>
+                            <p class="menu-item-description">Tender mutton pieces in rich Kashmiri-style aromatic gravy</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.6) 189 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'mr1', name: 'Mutton Rogan Josh', price: 380, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- More Vegetarian Dishes -->
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-pizza-slice"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Veg Pizza</h3>
+                                    <span class="menu-type">Main Course • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹320</h3>
+                            <p class="menu-item-description">Wood-fired pizza with fresh vegetables, mozzarella cheese and tomato sauce</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.7) 412 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'vp1', name: 'Veg Pizza', price: 320, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-bread-slice"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Garlic Naan</h3>
+                                    <span class="menu-type">Bread • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹80</h3>
+                            <p class="menu-item-description">Soft Indian flatbread with garlic butter, perfect with curries</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.4) 278 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'gn1', name: 'Garlic Naan', price: 80, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-seedling"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Dal Makhani</h3>
+                                    <span class="menu-type">Main Course • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹240</h3>
+                            <p class="menu-item-description">Creamy black lentils cooked with butter and aromatic spices</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.6) 324 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'dm1', name: 'Dal Makhani', price: 240, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- More Non-Vegetarian Dishes -->
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-drumstick-bite"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Chicken 65</h3>
+                                    <span class="menu-type">Starter • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹200</h3>
+                            <p class="menu-item-description">Spicy deep-fried chicken with aromatic spices and curry leaves</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.7) 389 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'c65', name: 'Chicken 65', price: 200, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-fish"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Fish Curry</h3>
+                                    <span class="menu-type">Main Course • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹280</h3>
+                            <p class="menu-item-description">Fresh fish cooked in tangy coconut curry with traditional spices</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <h6>(4.5) 267 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'fc1', name: 'Fish Curry', price: 280, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item non-veg-item" data-category="non-veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-bacon"></i>
+                            <div class="menu-item-badge non-veg-badge">🥩 Non-Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Pepper Chicken</h3>
+                                    <span class="menu-type">Main Course • Non-Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹260</h3>
+                            <p class="menu-item-description">Chicken cooked with black pepper and aromatic spices</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.6) 198 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'pc1', name: 'Pepper Chicken', price: 260, category: 'non-veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Veg Dish -->
+                    <div class="menu-item veg-item" data-category="veg">
+                        <div class="menu-item-icon">
+                            <i class="fas fa-leaf"></i>
+                            <div class="menu-item-badge veg-badge">🌱 Veg</div>
+                        </div>
+                        <div class="menu-item-content">
+                            <div class="menu-item-header">
+                                <div>
+                                    <h3>Malai Kofta</h3>
+                                    <span class="menu-type">Main Course • Vegetarian</span>
+                                </div>
+                            </div>
+                            <h3 class="menu-item-price">₹290</h3>
+                            <p class="menu-item-description">Soft vegetable dumplings in rich creamy gravy with cashew paste</p>
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <h6>(4.8) 298 reviews</h6>
+                            </div>
+                            <div class="menu-item-actions">
+                                <button class="btn-add" onclick="addToCart({id: 'mk1', name: 'Malai Kofta', price: 290, category: 'veg'})">
+                                    <i class="fas fa-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+        </section>
+
+{% endblock %}
+
+
+<script>
+// Cart functionality
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+function addToCart(item) {
+    const existingItem = cart.find(cartItem => cartItem.id === item.id);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            category: item.category,
+            quantity: 1
+        });
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartDisplay();
+    showNotification(`${item.name} added to cart! Redirecting to cart...`);
+    
+    // Redirect to cart page after 1.5 seconds
+    setTimeout(() => {
+        const selectedTable = localStorage.getItem('selectedTable') || document.getElementById('selected-table')?.textContent?.replace('Table ', '');
+        if (selectedTable) {
+            window.location.href = `/orders/cart/?table=${selectedTable}`;
+        } else {
+            window.location.href = '/orders/cart/';
+        }
+    }, 1500);
+}
+
+function updateCartDisplay() {
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+    const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    
+    // Update cart indicator if it exists
+    const cartIndicator = document.querySelector('.cart-indicator');
+    if (cartIndicator) {
+        const selectedTable = localStorage.getItem('selectedTable') || document.getElementById('selected-table')?.textContent?.replace('Table ', '');
+        const cartUrl = selectedTable ? `/orders/cart/?table=${selectedTable}` : '/orders/cart/';
+        cartIndicator.innerHTML = `
+            <a href="${cartUrl}" class="btn btn-primary">
+                <i class="fas fa-shopping-cart"></i>
+                Cart (${cartCount}) - ₹${cartTotal}
+            </a>
+        `;
+    }
+}
+
+function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    
+    // Apply styles directly with maximum specificity
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.background = '#10b981';
+    notification.style.color = '#FFFFFF';
+    notification.style.padding = '1rem 1.5rem';
+    notification.style.borderRadius = '12px';
+    notification.style.boxShadow = '0 10px 30px rgba(16, 185, 129, 0.4)';
+    notification.style.zIndex = '999999';
+    notification.style.fontWeight = 'bold';
+    notification.style.fontSize = '16px';
+    notification.style.border = '4px solid #FFFFFF';
+    notification.style.minWidth = '300px';
+    notification.style.textAlign = 'center';
+    notification.style.fontFamily = 'Arial, sans-serif';
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            document.body.removeChild(notification);
+        }
+    }, 5000);
+}
+
+// Menu filtering functionality
+function filterMenu(category) {
+    const menuItems = document.querySelectorAll('.menu-item');
+    const categoryButtons = document.querySelectorAll('.category-btn');
+    
+    // Update active button
+    categoryButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.category === category) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Filter menu items
+    menuItems.forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'block';
+            setTimeout(() => {
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 100);
+        } else {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                item.style.display = 'none';
+            }, 300);
+        }
+    });
+}
+
+// Initialize animations on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set selected table from localStorage or get from session
+    let selectedTable = localStorage.getItem('selectedTable');
+    
+    // If not in localStorage, try to get from session (for real-time updates)
+    if (!selectedTable) {
+        const urlParams = new URLSearchParams(window.location.search);
+        selectedTable = urlParams.get('table');
+    }
+    
+    if (selectedTable) {
+        const tableElement = document.getElementById('selected-table');
+        if (tableElement) {
+            tableElement.textContent = `Table ${selectedTable}`;
+        }
+        // Store in localStorage for persistence
+        localStorage.setItem('selectedTable', selectedTable);
+    }
+    
+    // Update cart display
+    updateCartDisplay();
+    
+    // Animate menu items on load
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(30px)';
+        setTimeout(() => {
+            item.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, 200 + (index * 100));
+    });
+    
+    // Add hover effects for buttons
+    const buttons = document.querySelectorAll('.btn-add, .category-btn');
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>

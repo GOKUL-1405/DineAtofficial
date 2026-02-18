@@ -1,0 +1,484 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kitchen Dashboard - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    .kitchen-dashboard {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        background: #233D4C;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .dashboard-header h1 { color: black !important;
+        color: black;
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
+
+    .dashboard-header p { color: rgba(255, 255, 255, 0.9) !important;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .staff-info { color: white !important;
+        display: flex;
+        gap: 2rem;
+        color: white;
+    }
+
+    .staff-info span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .orders-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .summary-card {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .summary-card h3 { color: #2c3e50 !important;
+        margin-bottom: 1rem;
+        color: #ffffff;
+        font-size: 1.1rem;
+    }
+
+    .count {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #ff6b6b;
+    }
+
+    .orders-board {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .order-column {
+        background: #fcfafb;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-column h2 {
+        color: black;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid #e74c3c;
+    }
+
+    .order-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s;
+        background: #233D4C;
+    }
+
+    .order-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .order-card.preparing {
+        border-left: 4px solid #3498db;
+    }
+
+    .order-card.ready {
+        border-left: 4px solid #27ae60;
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .order-header h3 {
+        color: #ffffff;
+        margin-bottom: 0.3rem;
+        font-size: 1.3rem;
+    }
+
+    .order-header p {
+        color: #666;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .order-status {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-confirmed {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .status-ready {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .order-items {
+        background:white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .order-items h4 {
+        color: black;
+        margin-bottom: 0.8rem;
+        font-size: 1.1rem;
+    }
+
+    .order-items ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .order-items li {
+        padding: 0.4rem 0;
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .order-items strong {
+        color: #ff6b6b;
+    }
+
+    .special-note {
+        background: #fff3cd;
+        padding: 0.8rem;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+        border-left: 3px solid #ffc107;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background: #27ae60;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #229954;
+        transform: translateY(-2px);
+    }
+
+    .btn-info {
+        background: #9b59b6;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background: #8e44ad;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #6c757d;
+        padding: 2rem;
+        font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+        .kitchen-dashboard {
+            padding: 80px 0 30px;
+        }
+
+        .dashboard-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .dashboard-header h1 { color: white !important;
+            font-size: 2rem;
+        }
+
+        .staff-info { color: white !important;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .orders-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .summary-card h3 { color: #2c3e50 !important;
+            margin-bottom: 0;
+        }
+
+        .count {
+            font-size: 1.8rem;
+        }
+
+        .orders-board {
+            grid-template-columns: 1fr;
+        }
+
+        .order-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .order-status {
+            align-self: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="kitchen-dashboard">
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1>Kitchen Dashboard</h1>
+                <p>Manage Orders - {{ user.username }}</p>
+            </div>
+            <div class="staff-info">
+                <span><i class="fas fa-user"></i> Chef: {{ user.get_full_name|default:user.username }}</span>
+                <span><i class="fas fa-clock"></i> <span id="current-time"></span></span>
+            </div>
+        </div>
+
+        <div class="orders-summary">
+            <div class="summary-card">
+                <h3>Pending Orders</h3>
+                <div class="count">{{ pending_orders.count }}</div>
+            </div>
+            <div class="summary-card">
+                <h3>In Progress</h3>
+                <div class="count">{{ preparing_orders.count }}</div>
+            </div>
+            <div class="summary-card">
+                <h3>Ready to Serve</h3>
+                <div class="count">{{ ready_orders.count }}</div>
+            </div>
+            <div class="summary-card">
+                <h3>Completed Today</h3>
+                <div class="count" id="completed-count">0</div>
+            </div>
+        </div>
+
+        <div class="orders-board">
+            <!-- Pending Orders Column -->
+            <div class="order-column">
+                <h2>Pending ({{ pending_orders.count }})</h2>
+                {% for order in pending_orders %}
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <h3>Order #{{ order.id }}</h3>
+                            <p><strong>Table:</strong> {{ order.table|default:"Takeaway" }}</p>
+                            <p><strong>Customer:</strong> {{ order.customer.username }}</p>
+                            <p><i class="fas fa-clock"></i> {{ order.created_at|date:"h:i A" }}</p>
+                        </div>
+                        <div class="order-status status-pending">Pending</div>
+                    </div>
+
+                    <div class="order-items">
+                        <h4>Items:</h4>
+                        <ul>
+                            {% for item in order.items.all %}
+                            <li>{{ item.quantity }}x {{ item.menu_item.name }} - ₹{{ item.subtotal }}</li>
+                            {% endfor %}
+                        </ul>
+                        <p><strong>Total: ₹{{ order.total_amount }}</strong></p>
+                    </div>
+
+                    {% if order.special_instructions %}
+                    <p class="special-note"><strong>Note:</strong> {{ order.special_instructions }}</p>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'dashboard:update_order_status' order.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="PREPARING">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-check"></i> Start Preparing
+                        </button>
+                    </form>
+                </div>
+                {% empty %}
+                <p class="empty-state">No pending orders</p>
+                {% endfor %}
+            </div>
+
+            <!-- Preparing Orders Column -->
+            <div class="order-column">
+                <h2>Preparing ({{ preparing_orders.count }})</h2>
+                {% for order in preparing_orders %}
+                <div class="order-card preparing">
+                    <div class="order-header">
+                        <div>
+                            <h3>Order #{{ order.id }}</h3>
+                            <p><strong>Table:</strong> {{ order.table|default:"Takeaway" }}</p>
+                            <p><i class="fas fa-clock"></i> {{ order.created_at|date:"h:i A" }}</p>
+                        </div>
+                        <div class="order-status status-confirmed">In Progress</div>
+                    </div>
+
+                    <div class="order-items">
+                        <h4>Items:</h4>
+                        <ul>
+                            {% for item in order.items.all %}
+                            <li>{{ item.quantity }}x {{ item.menu_item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                        <p><strong>Total: ₹{{ order.total_amount }}</strong></p>
+                    </div>
+
+                    <form method="post" action="{% url 'dashboard:update_order_status' order.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="READY">
+                        <button type="submit" class="btn btn-success btn-block">
+                            <i class="fas fa-utensils"></i> Mark Ready
+                        </button>
+                    </form>
+                </div>
+                {% empty %}
+                <p class="empty-state">No orders in preparation</p>
+                {% endfor %}
+            </div>
+
+            <!-- Ready Orders Column -->
+            <div class="order-column">
+                <h2>Ready ({{ ready_orders.count }})</h2>
+                {% for order in ready_orders %}
+                <div class="order-card ready">
+                    <div class="order-header">
+                        <div>
+                            <h3>Order #{{ order.id }}</h3>
+                            <p><strong>Table:</strong> {{ order.table|default:"Takeaway" }}</p>
+                            <p><i class="fas fa-clock"></i> {{ order.created_at|date:"h:i A" }}</p>
+                        </div>
+                        <div class="order-status status-ready">Ready to Serve</div>
+                    </div>
+
+                    <div class="order-items">
+                        <h4>Items:</h4>
+                        <ul>
+                            {% for item in order.items.all %}
+                            <li>{{ item.quantity }}x {{ item.menu_item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                        <p><strong>Total: ₹{{ order.total_amount }}</strong></p>
+                    </div>
+
+                    <form method="post" action="{% url 'dashboard:update_order_status' order.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="status" value="SERVED">
+                        <button type="submit" class="btn btn-info btn-block">
+                            <i class="fas fa-check-double"></i> Mark Served
+                        </button>
+                    </form>
+                </div>
+                {% empty %}
+                <p class="empty-state">No ready orders</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Update current time
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        const timeEl = document.getElementById('current-time');
+        if (timeEl) {
+            timeEl.textContent = timeString;
+        }
+    }
+
+    setInterval(updateTime, 1000);
+    updateTime();
+</script>
+{% endblock %}

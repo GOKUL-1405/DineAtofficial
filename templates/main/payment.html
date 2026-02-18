@@ -1,0 +1,647 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #2e4a5a;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .payment-page {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 40px 20px;
+        box-sizing: border-box;
+    }
+
+    .payment-container {
+        display: flex;
+        background-color: #3f5b6b;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        max-width: 900px;
+        width: 100%;
+    }
+
+    .order-details-section {
+        flex: 1;
+        padding: 30px;
+        background-color: #3f5b6b;
+        color: #e0e0e0;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .order-details-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+    }
+
+    .order-details-section h2 i {
+        margin-right: 10px;
+        color: #88d499;
+    }
+
+    .total-amount-display {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #ffffff;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .choose-payment-section {
+        flex: 1.5;
+        padding: 30px;
+        background-color: #2e4a5a;
+        color: #ffffff;
+    }
+
+    .choose-payment-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+    }
+
+    .choose-payment-section h2 i {
+        margin-right: 10px;
+        color: #88d499;
+    }
+
+    .payment-method-card {
+        background-color: #4a6472;
+        border: 2px solid #5a7482;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .payment-method-card:hover {
+        border-color: #88d499;
+        background-color: #5a7482;
+    }
+
+    .payment-method-card.selected {
+        border-color: #88d499;
+        background-color: #5a7482;
+        box-shadow: 0 0 10px rgba(136, 212, 153, 0.3);
+    }
+
+    .payment-method-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .payment-method-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #88d499;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 1.2rem;
+        color: #2e4a5a;
+    }
+
+    .payment-method-text h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: #ffffff;
+    }
+
+    .payment-method-text p {
+        margin: 5px 0 0 0;
+        font-size: 0.9rem;
+        color: #b0b0b0;
+    }
+
+    .payment-method-arrow {
+        color: #88d499;
+        font-size: 1.2rem;
+    }
+
+    .pay-now-button {
+        width: 100%;
+        background-color: #88d499;
+        color: #2e4a5a;
+        border: none;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+    .pay-now-button:hover {
+        background-color: #7ac48a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(136, 212, 153, 0.3);
+    }
+
+    .pay-now-button:disabled {
+        background-color: #5a7482;
+        color: #8a9aa8;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .order-item-name {
+        font-size: 1rem;
+        color: #e0e0e0;
+    }
+
+    .order-item-price {
+        font-size: 1rem;
+        color: #ffffff;
+        font-weight: 500;
+    }
+
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-top: 2px solid rgba(255, 255, 255, 0.2);
+        margin-top: 20px;
+    }
+
+    .order-total-label {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .order-total-amount {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #88d499;
+    }
+
+    @media (max-width: 768px) {
+        .payment-container {
+            flex-direction: column;
+        }
+
+        .order-details-section {
+            border-right: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .payment-page {
+            padding: 20px 10px;
+        }
+    }
+
+    .loading-spinner {
+        display: none;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #2e4a5a;
+        border-top: 3px solid #ffffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .pay-now-button.loading .btn-text {
+        display: none;
+    }
+
+    .pay-now-button.loading .loading-spinner {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-page">
+    <div class="payment-container">
+        <!-- Order Details Section -->
+        <div class="order-details-section">
+            <h2><i class="fas fa-receipt"></i> Order Details</h2>
+            
+            <div class="order-items">
+                {% for item in order_items %}
+                <div class="order-item">
+                    <div class="order-item-name">{{ item.name }}</div>
+                    <div class="order-item-price">₹{{ item.price }}</div>
+                </div>
+                {% empty %}
+                <div class="order-item">
+                    <div class="order-item-name">No items in cart</div>
+                    <div class="order-item-price">₹0</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="order-total">
+                <div class="order-total-label">Total</div>
+                <div class="order-total-amount">₹{{ total_amount|default:0 }}</div>
+            </div>
+
+            <div class="total-amount-display">
+                Total: ₹{{ total_amount|default:0 }}
+            </div>
+        </div>
+
+        <!-- Choose Payment Section -->
+        <div class="choose-payment-section">
+            <h2><i class="fas fa-credit-card"></i> Choose Payment</h2>
+            
+            <div class="payment-method-card" data-method="credit-card">
+                <div class="payment-method-info">
+                    <div class="payment-method-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="payment-method-text">
+                        <h3>Credit Card</h3>
+                        <p>Visa, Mastercard, Rupay</p>
+                    </div>
+                </div>
+                <div class="payment-method-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="payment-method-card" data-method="wallet">
+                <div class="payment-method-info">
+                    <div class="payment-method-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="payment-method-text">
+                        <h3>Wallet</h3>
+                        <p>Paytm, PhonePe, Amazon Pay</p>
+                    </div>
+                </div>
+                <div class="payment-method-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="payment-method-card" data-method="qr">
+                <div class="payment-method-info">
+                    <div class="payment-method-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <div class="payment-method-text">
+                        <h3>GPay / Paytm (QR)</h3>
+                        <p>Scan & Pay</p>
+                    </div>
+                </div>
+                <div class="payment-method-arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+
+            <button class="pay-now-button" id="pay-now-btn" disabled>
+                <span class="btn-text">PAY NOW</span>
+                <div class="loading-spinner"></div>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const paymentMethodCards = document.querySelectorAll('.payment-method-card');
+        const payNowBtn = document.getElementById('pay-now-btn');
+        
+        let selectedPaymentMethod = null;
+
+        // Payment method selection
+        paymentMethodCards.forEach(card => {
+            card.addEventListener('click', function() {
+                paymentMethodCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                selectedPaymentMethod = this.dataset.method;
+                payNowBtn.disabled = false;
+                
+                // Handle QR payment method
+                if (selectedPaymentMethod === 'qr') {
+                    showQRCode();
+                } else {
+                    hideQRCode();
+                }
+            });
+        });
+
+        function showQRCode() {
+            // Create QR code modal/section
+            const qrModal = document.createElement('div');
+            qrModal.className = 'qr-modal';
+            qrModal.innerHTML = `
+                <div class="qr-modal-content">
+                    <div class="qr-modal-header">
+                        <h3>Scan QR Code to Pay</h3>
+                        <button class="qr-modal-close">&times;</button>
+                    </div>
+                    <div class="qr-modal-body">
+                        <div class="qr-code-display">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="qr-details">
+                            <p>Scan this QR code using GPay, PhonePe, or Paytm</p>
+                            <div class="upi-info">
+                                <strong>UPI ID:</strong> dineatofficial@ybl<br>
+                                <strong>Amount:</strong> ₹{{ total_amount|default:0 }}
+                            </div>
+                        </div>
+                        <button class="confirm-qr-payment">I've Paid</button>
+                    </div>
+                </div>
+            `;
+            
+            // Add styles
+            qrModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            `;
+            
+            document.body.appendChild(qrModal);
+            
+            // Close modal
+            const closeBtn = qrModal.querySelector('.qr-modal-close');
+            closeBtn.addEventListener('click', () => {
+                document.body.removeChild(qrModal);
+            });
+            
+            // Confirm payment
+            const confirmBtn = qrModal.querySelector('.confirm-qr-payment');
+            confirmBtn.addEventListener('click', () => {
+                document.body.removeChild(qrModal);
+                processPayment();
+            });
+            
+            // Add modal styles
+            const modalStyle = document.createElement('style');
+            modalStyle.textContent = `
+                .qr-modal-content {
+                    background: #3f5b6b;
+                    border-radius: 15px;
+                    max-width: 400px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                }
+                
+                .qr-modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 20px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                }
+                
+                .qr-modal-header h3 {
+                    color: white;
+                    margin: 0;
+                }
+                
+                .qr-modal-close {
+                    background: none;
+                    border: none;
+                    color: white;
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                }
+                
+                .qr-modal-body {
+                    padding: 20px;
+                    text-align: center;
+                }
+                
+                .qr-code-display {
+                    width: 200px;
+                    height: 200px;
+                    background: white;
+                    border-radius: 10px;
+                    margin: 0 auto 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 4rem;
+                    color: #2e4a5a;
+                }
+                
+                .qr-details p {
+                    color: #e0e0e0;
+                    margin-bottom: 15px;
+                }
+                
+                .upi-info {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 20px;
+                    color: #e0e0e0;
+                    text-align: left;
+                }
+                
+                .confirm-qr-payment {
+                    background: #88d499;
+                    color: #2e4a5a;
+                    border: none;
+                    border-radius: 8px;
+                    padding: 12px 30px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+                
+                .confirm-qr-payment:hover {
+                    background: #7ac48a;
+                }
+            `;
+            document.head.appendChild(modalStyle);
+        }
+
+        function hideQRCode() {
+            const existingModal = document.querySelector('.qr-modal');
+            if (existingModal) {
+                document.body.removeChild(existingModal);
+            }
+        }
+
+        // Pay Now button
+        payNowBtn.addEventListener('click', function() {
+            if (!selectedPaymentMethod) return;
+            
+            if (selectedPaymentMethod === 'qr') {
+                showQRCode();
+            } else {
+                processPayment();
+            }
+        });
+
+        function processPayment() {
+            // Show loading state
+            payNowBtn.classList.add('loading');
+            payNowBtn.disabled = true;
+            
+            // Simulate payment processing
+            setTimeout(() => {
+                payNowBtn.classList.remove('loading');
+                payNowBtn.innerHTML = '<span class="btn-text">✓ Payment Successful!</span>';
+                payNowBtn.style.background = '#4CAF50';
+                
+                // Show success message
+                showNotification('Payment successful! Order confirmed.', 'success');
+                
+                // Redirect after delay
+                setTimeout(() => {
+                    // window.location.href = '/order-success/';
+                    showNotification('Thank you for your order! You will receive a confirmation shortly.', 'success');
+                }, 2000);
+            }, 3000);
+        }
+
+        // Notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="notification-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4CAF50' : '#2196F3'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                z-index: 10000;
+                min-width: 300px;
+                animation: slideInRight 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOutRight 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+            
+            // Close button
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.addEventListener('click', () => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            });
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            
+            .notification-content {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .notification-close {
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                margin-left: 1rem;
+                font-size: 1.2rem;
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}

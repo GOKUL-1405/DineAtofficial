@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Signup - DineAt Premium Restaurant{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #233D4C;
+    }
+
+    .login-section {
+        padding: 50px 0;
+        min-height: 100vh;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #233D4C;
+        pointer-events: none;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .login-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .customer-login-form {
+        background: #233D4C;
+        border-radius: 30px;
+        padding: 3rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .customer-login-form::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #10b981, #059669);
+        background-size: 200% 100%;
+        animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -100% 0;
+        }
+
+        100% {
+            background-position: 100% 0;
+        }
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .customer-login-form .login-header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .customer-login-form .login-header p {
+        font-weight: 500;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .input-group {
+        margin-bottom: 1.2rem;
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: block !important;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+
+    .customer-login-form label {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: white;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-family: 'Arial', sans-serif;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .customer-login-form label i {
+        color: #10b981;
+        font-size: 1rem;
+    }
+
+    .customer-login-form input {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        background: #333333 !important;
+        border: 2px solid #ffffff !important;
+        border-radius: 15px;
+        color: #ffffff !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease;
+        outline: none;
+        font-family: 'Arial', sans-serif;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: 50px !important;
+        box-sizing: border-box !important;
+    }
+
+    .customer-login-form input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .customer-login-form input:focus {
+        border-color: #10b981;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+    }
+
+    .customer-login-form input:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .customer-login-form .btn-primary {
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        border-radius: 18px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 1rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    }
+
+    .customer-login-form .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .customer-login-form .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .customer-login-form .btn-primary:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+        background: linear-gradient(135deg, #059669, #10b981);
+    }
+
+    /* Features Section */
+    .login-features {
+        color: #233D4C;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-features h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 2.5rem;
+        color: #233D4C;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .feature-list {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 20px;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+        transform: translateX(10px);
+        background: #e9ecef;
+        border-color: #10b981;
+    }
+
+    .feature-item i {
+        font-size: 1.8rem;
+        color: #10b981;
+        background: rgba(16, 185, 129, 0.15);
+        padding: 1rem;
+        border-radius: 15px;
+    }
+
+    .feature-item h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+        color: #233D4C;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .feature-item p {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .form-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .form-footer p {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .form-footer a {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .form-footer a:hover {
+        color: #10b981;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 992px) {
+        .login-wrapper {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .login-features {
+            order: 2;
+        }
+
+        .customer-login-form {
+            order: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .customer-login-form {
+            padding: 2rem;
+        }
+
+        .customer-login-form .login-header h1 {
+            font-size: 2rem;
+        }
+
+        .login-features h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="login-section">
+    <div class="container">
+        <div class="login-wrapper">
+            <div class="login-form-container customer-login-form">
+                <div class="login-header">
+                    <h1>Join DineAt</h1>
+                    <p>Create your account today</p>
+                </div>
+
+                <form method="POST" action="{% url 'accounts:customer_signup' %}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <label for="username">
+                            <i class="fas fa-user"></i>
+                            Username
+                        </label>
+                        <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="phone_number">
+                            <i class="fas fa-phone"></i>
+                            Phone Number
+                        </label>
+                        <input type="tel" id="phone_number" name="phone_number" placeholder="Enter your phone number">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Password
+                        </label>
+                        <input type="password" id="password" name="password" placeholder="Create a password" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirm_password">
+                            <i class="fas fa-lock"></i>
+                            Confirm Password
+                        </label>
+                        <input type="password" id="confirm_password" name="confirm_password"
+                            placeholder="Confirm your password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-user-plus"></i>
+                        Sign Up
+                    </button>
+                </form>
+
+                <center>
+                    <div class="form-footer">
+                        <p>Already have an account? <a href="{% url 'accounts:customer_login' %}">Login here</a></p>
+                    </div>
+                </center>
+            </div>
+
+            <div class="login-features">
+                <h1>Why Join DineAt?</h1>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Instant Reservations</h4>
+                            <p>Book tables instantly without waiting on call</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-gift"></i>
+                        <div>
+                            <h4>Exclusive Offers</h4>
+                            <p>Get access to members-only deals and discounts</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-history"></i>
+                        <div>
+                            <h4>Order History</h4>
+                            <p>Track your past orders and reorder favorites</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-heart"></i>
+                        <div>
+                            <h4>Personalized Experience</h4>
+                            <p>Get recommendations based on your taste</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

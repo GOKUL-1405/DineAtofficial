@@ -1,0 +1,393 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #233D4C !important;
+        color: white;
+        padding: 100px 0 50px;
+    }
+
+    .payment-container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .payment-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .payment-header h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 0 0.5rem;
+    }
+
+    .payment-header p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .payment-amount {
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .payment-amount h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #10b981;
+        margin: 0;
+    }
+
+    .payment-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .payment-option {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .payment-option:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .payment-option.selected {
+        background: rgba(16, 185, 129, 0.2);
+        border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .payment-option h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: white;
+        margin: 0 0 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .payment-option p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .qr-code {
+        text-align: center;
+        margin: 1rem 0;
+    }
+
+    .qr-code img {
+        max-width: 200px;
+        border-radius: 12px;
+        background: white;
+        padding: 10px;
+    }
+
+    .upi-details {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .upi-details p {
+        margin: 0.5rem 0;
+        font-size: 0.9rem;
+    }
+
+    .upi-details strong {
+        color: #10b981;
+    }
+
+    .pay-button {
+        width: 100%;
+        padding: 1.2rem;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 2rem;
+    }
+
+    .pay-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.35);
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.8rem 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .card-details {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.8rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #10b981;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .payment-container {
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-container">
+    <div class="payment-header">
+        <h1>💳 Payment</h1>
+        <p>Choose your preferred payment method</p>
+    </div>
+
+    <div class="payment-amount">
+        <h3>₹{{ total_amount|default:"0.00" }}</h3>
+    </div>
+
+    <form method="post" action="{% url 'orders:process_payment' %}" id="payment-form">
+        {% csrf_token %}
+        <input type="hidden" name="cart_data" value="{{ cart_data|default:''|escape }}">
+        <input type="hidden" name="total_amount" value="{{ total_amount|default:'' }}">
+        <input type="hidden" name="payment_method" id="selected_payment_method" value="cod">
+
+        <div class="payment-methods">
+            <div class="payment-option" onclick="selectPayment('cod')">
+                <h4>🚚 Wallet Payment</h4>
+                <p>Pay using your wallet balance</p>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment('card')">
+                <h4>💳 Credit/Debit Card</h4>
+                <p>Pay securely with your card</p>
+                
+                <div class="card-details" id="card_section" style="display: none;">
+                    <div class="form-group">
+                        <label for="card_name">Cardholder Name</label>
+                        <input type="text" id="card_name" name="card_name" placeholder="John Doe" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="card_number">Card Number</label>
+                        <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="card_expiry">Expiry Date</label>
+                            <input type="text" id="card_expiry" name="card_expiry" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="card_cvv">CVV</label>
+                            <input type="text" id="card_cvv" name="card_cvv" placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment('upi')">
+                <h4>📱 UPI Payment</h4>
+                <p>Scan QR with GPay, Paytm, PhonePe</p>
+                
+                <div class="qr-code" id="qr_section" style="display: none;">
+                    <img src="https://quickchart.io/qr?size=200&text=upi://pay?pa=gokulkumar1406@okaxis&pn=DineAt%20Restaurant&am={{ total_amount|default:"0" }}&cu=INR&tn=DineAt%20Food%20Order" alt="UPI QR Code" />
+                </div>
+                
+                <div class="upi-details" id="upi_section" style="display: none;">
+                    <p><strong>UPI ID:</strong> gokulkumar1406@okaxis</p>
+                    <p><strong>Merchant:</strong> DineAt Restaurant</p>
+                    <p><strong>Amount:</strong> ₹{{ total_amount|default:"0.00" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="pay-button" onclick="validateAndSubmit()">Confirm Payment</button>
+    </form>
+
+    <div style="text-align: center;">
+        <a href="{% url 'orders:cart' %}" class="back-button">← Back to Cart</a>
+    </div>
+</div>
+
+<script>
+function selectPayment(method) {
+    // Remove selected class from all options
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked option
+    event.currentTarget.classList.add('selected');
+    
+    // Hide all detail sections
+    document.getElementById('card_section').style.display = 'none';
+    document.getElementById('qr_section').style.display = 'none';
+    document.getElementById('upi_section').style.display = 'none';
+    
+    // Show relevant details based on selection
+    if (method === 'card') {
+        document.getElementById('card_section').style.display = 'block';
+        console.log('Card payment selected - showing card details');
+    }
+    
+    if (method === 'upi') {
+        document.getElementById('qr_section').style.display = 'block';
+        document.getElementById('upi_section').style.display = 'block';
+        console.log('UPI payment selected - showing QR details');
+    }
+    
+    // Set hidden payment method value
+    document.getElementById('selected_payment_method').value = method;
+    console.log('Payment method selected:', method);
+}
+
+// Auto-select COD by default
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.payment-option').classList.add('selected');
+    console.log('Payment page loaded');
+});
+
+// Add card number formatting
+document.getElementById('card_number')?.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '');
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    e.target.value = formattedValue;
+});
+
+// Add expiry date formatting
+document.getElementById('card_expiry')?.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    }
+    e.target.value = value;
+});
+
+// Add CVV validation
+document.getElementById('card_cvv')?.addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+});
+
+// Validation and submit function
+function validateAndSubmit() {
+    console.log('Payment button clicked!');
+    
+    const paymentMethod = document.getElementById('selected_payment_method').value;
+    console.log('Payment method:', paymentMethod);
+    
+    // Validate based on payment method
+    if (paymentMethod === 'card') {
+        const cardName = document.getElementById('card_name').value;
+        const cardNumber = document.getElementById('card_number').value;
+        const cardExpiry = document.getElementById('card_expiry').value;
+        const cardCvv = document.getElementById('card_cvv').value;
+        
+        console.log('Card details:', { cardName, cardNumber, cardExpiry, cardCvv });
+        
+        if (!cardName || !cardNumber || !cardExpiry || !cardCvv) {
+            alert('Please fill in all card details');
+            return;
+        }
+        
+        if (cardNumber.replace(/\s/g, '').length < 16) {
+            alert('Please enter a valid 16-digit card number');
+            return;
+        }
+        
+        if (cardCvv.length < 3) {
+            alert('Please enter a valid CVV');
+            return;
+        }
+    }
+    
+    // If validation passes, submit form
+    console.log('Validation passed, submitting form...');
+    document.getElementById('payment-form').submit();
+}
+</script>
+{% endblock %}
