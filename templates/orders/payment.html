@@ -1,0 +1,777 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #233D4C !important;
+        color: white;
+    }
+
+    .payment-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+    }
+
+    .payment-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .panel {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        padding: 1.5rem;
+    }
+
+    .panel h3 {
+        margin: 0 0 1rem;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+    }
+
+    .order-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .order-item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .order-item .name {
+        font-weight: 900;
+        color: white;
+        margin: 0;
+        font-size: 0.98rem;
+    }
+
+    .order-item .meta {
+        margin: 0.2rem 0 0;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.85rem;
+    }
+
+    .order-item .price {
+        text-align: right;
+        font-weight: 900;
+        color: white;
+        white-space: nowrap;
+    }
+
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        font-weight: 900;
+    }
+
+    .qr-box {
+        display: none;
+        margin-top: 1rem;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(0, 0, 0, 0.25);
+        padding: 1.25rem;
+    }
+
+    .qr-box.active {
+        display: block;
+    }
+
+    .qr-row {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .qr-canvas-wrap {
+        width: 160px;
+        height: 160px;
+        background: white;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 10px;
+    }
+
+    .qr-canvas-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
+
+    .qr-hint h4 {
+        margin: 0;
+        font-weight: 900;
+        color: white;
+    }
+
+    .qr-hint p {
+        margin: 0.4rem 0 0;
+        color: rgba(255, 255, 255, 0.75);
+        font-weight: 600;
+        line-height: 1.5;
+        font-size: 0.9rem;
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 999px;
+        font-weight: 900;
+        font-size: 0.78rem;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .pill.success {
+        background: rgba(16, 185, 129, 0.18);
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #10b981;
+    }
+
+    .pill.warn {
+        background: rgba(251, 191, 36, 0.14);
+        border-color: rgba(251, 191, 36, 0.30);
+        color: #fbbf24;
+    }
+
+    .payment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+
+    .payment-header h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+    }
+
+    .total-pill {
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: #10b981;
+        padding: 0.6rem 1rem;
+        border-radius: 999px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+
+    .payment-methods {
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .payment-method {
+        margin-bottom: 1rem;
+    }
+
+    .payment-method input[type="radio"] {
+        display: none;
+    }
+
+    .payment-method label {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 1.1rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+    .payment-method label:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .payment-method input[type="radio"]:checked + label {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: #10b981;
+    }
+
+    .payment-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .payment-info h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 800;
+        color: white;
+    }
+
+    .payment-info p {
+        margin: 0.2rem 0 0;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+    .card-details {
+        display: none;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-details.active {
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.85rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+        outline: none;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1rem;
+    }
+
+    .pay-btn {
+        width: 100%;
+        padding: 1.1rem;
+        border: none;
+        border-radius: 14px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: #10b981;
+        color: #0b1b14;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+    .pay-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.35);
+    }
+
+    @media (max-width: 768px) {
+        .payment-card {
+            padding: 1.5rem;
+        }
+        .payment-grid {
+            grid-template-columns: 1fr;
+        }
+        .qr-row {
+            grid-template-columns: 1fr;
+        }
+        .qr-canvas-wrap {
+            margin: 0 auto;
+        }
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="payment-page">
+    <div class="container">
+        <div class="payment-card">
+            <div class="payment-header">
+                <h1>💳 Payment</h1>
+                <div class="total-pill">Total: ₹{{ total_amount }}</div>
+            </div>
+
+            <div class="payment-grid">
+                <div class="panel" id="order-panel">
+                    <h3>🧾 Order Details</h3>
+                    <ul class="order-list" id="order-list"></ul>
+                    <div class="order-total">
+                        <span>Total</span>
+                        <span>₹{{ total_amount }}</span>
+                    </div>
+                </div>
+
+                <div class="panel" id="payment-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap: 0.75rem; flex-wrap:wrap;">
+                        <h3 style="margin:0;">Choose Payment</h3>
+                        <span class="pill warn" id="upi-pill">Waiting</span>
+                    </div>
+
+                    <form method="post" action="{% url 'orders:process_payment' %}" id="payment-page-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="cart_data" id="cart-data" value="{{ cart_data|default:''|escape }}">
+                        <input type="hidden" name="total_amount" id="total-amount-hidden" value="{{ total_amount|default:'' }}">
+                        <input type="hidden" name="payment_method" id="payment-method-hidden" value="card">
+
+                        <div class="payment-methods">
+                            <div class="payment-method">
+                                <input type="radio" id="pay-card" name="payment" value="card" checked>
+                                <label for="pay-card">
+                                    <div class="payment-icon"><i class="fas fa-credit-card"></i></div>
+                                    <div class="payment-info">
+                                        <h4>Credit Card</h4>
+                                        <p>Visa, Mastercard, RuPay</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="payment-method">
+                                <input type="radio" id="pay-wallet" name="payment" value="wallet">
+                                <label for="pay-wallet">
+                                    <div class="payment-icon"><i class="fas fa-wallet"></i></div>
+                                    <div class="payment-info">
+                                        <h4>Wallet</h4>
+                                        <p>Amazon Pay, PhonePe Wallet</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="payment-method">
+                                <input type="radio" id="pay-upi" name="payment" value="upi">
+                                <label for="pay-upi">
+                                    <div class="payment-icon"><i class="fas fa-qrcode"></i></div>
+                                    <div class="payment-info">
+                                        <h4>GPay / Paytm (QR)</h4>
+                                        <p>Scan QR using mobile</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="card-details" id="card-details">
+                            <h4 style="margin-top:0; font-weight:900;">Card Details</h4>
+                            <div class="form-group">
+                                <label for="card-number">Card Number</label>
+                                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expiry">Expiry</label>
+                                    <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <input type="text" id="cvv" placeholder="123" maxlength="3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="qr-box" id="qr-box">
+                            {% if upi_payment_info %}
+                            <div class="qr-row">
+                                <div class="qr-canvas-wrap">
+                                    {% if upi_payment_info.qr_code_path %}
+                                        <img src="/media/{{ upi_payment_info.qr_code_path }}" alt="UPI QR Code" />
+                                    {% else %}
+                                        <img id="qr-img" alt="UPI QR" />
+                                    {% endif %}
+                                </div>
+                                <div class="qr-hint">
+                                    <h4>Scan QR (GPay / Paytm)</h4>
+                                    <p><strong>UPI ID:</strong> {{ upi_payment_info.upi_id }}</p>
+                                    <p><strong>Merchant:</strong> {{ upi_payment_info.merchant_name }}</p>
+                                    <p><strong>Amount:</strong> ₹{{ total_amount }}</p>
+                                    <p style="margin-top:0.75rem;">Mobile la scan pannunga. Payment success aana udane indha page automatic-a update aagum.</p>
+                                    <p style="margin-top:0.5rem;"><strong>Note:</strong> QR scan pannumbodhu phone la oru success page open aagum. Adha close pannalaam.</p>
+                                    
+                                    <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                        <p style="margin:0; font-size: 0.8rem; color: rgba(255,255,255,0.8);">
+                                            <strong>Alternative:</strong> Copy UPI ID<br>
+                                            <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">{{ upi_payment_info.upi_id }}</code>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="qr-row">
+                                <div class="qr-canvas-wrap">
+                                    <img id="qr-img" alt="UPI QR" />
+                                </div>
+                                <div class="qr-hint">
+                                    <h4>Scan QR (GPay / Paytm)</h4>
+                                    <p>Mobile la scan pannunga. Payment success aana udane indha page automatic-a update aagum.</p>
+                                    <p style="margin-top:0.75rem;"><strong>Note:</strong> QR scan pannumbodhu phone la oru success page open aagum. Adha close pannalaam.</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="pay-btn" id="pay-btn">Pay Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ upi_payment_info|json_script:"upi-payment-data" }}
+<script>
+    const rawCartData = document.getElementById('cart-data')?.value || '[]';
+    let cart;
+    try {
+        cart = JSON.parse(rawCartData);
+    } catch (e) {
+        cart = [];
+    }
+
+    const orderList = document.getElementById('order-list');
+    if (orderList && Array.isArray(cart)) {
+        orderList.innerHTML = '';
+
+        cart.forEach((item) => {
+            const qty = parseInt(item.quantity || 1, 10);
+            const price = parseFloat(item.price || 0);
+            const line = document.createElement('li');
+            line.className = 'order-item';
+            line.innerHTML = `
+                <div>
+                    <p class="name">${item.name || ''}</p>
+                    <p class="meta">Qty: ${isNaN(qty) ? 1 : qty} · ₹${isNaN(price) ? 0 : price}</p>
+                </div>
+                <div class="price">₹${(isNaN(qty) || isNaN(price)) ? 0 : (qty * price).toFixed(2)}</div>
+            `;
+            orderList.appendChild(line);
+        });
+    }
+
+    const qrBox = document.getElementById('qr-box');
+    const upiPill = document.getElementById('upi-pill');
+    const payBtn = document.getElementById('pay-btn');
+
+    const upiMarkPaidUrl = "{{ upi_mark_paid_url|escapejs }}";
+    const paymentStatusUrl = "{{ payment_status_url|escapejs }}";
+    
+    // UPI Payment Info from backend
+    let upiPaymentInfo = null;
+    const upiDataElement = document.getElementById('upi-payment-data');
+    if (upiDataElement) {
+        try {
+            upiPaymentInfo = JSON.parse(upiDataElement.textContent);
+            console.log('UPI Payment Info loaded:', upiPaymentInfo);
+        } catch (e) {
+            console.error('Error parsing UPI payment data:', e);
+        }
+    } else {
+        console.warn('UPI payment data element not found');
+    }
+
+    function setQrImage(url) {
+        const img = document.getElementById('qr-img');
+        if (!img) return;
+
+        // If we have UPI payment info, use the deep link
+        if (upiPaymentInfo && upiPaymentInfo.upi_string) {
+            const qrService = 'https://quickchart.io/qr?size=200&text=';
+            img.src = qrService + encodeURIComponent(upiPaymentInfo.upi_string);
+            console.log('Setting QR image from UPI string:', upiPaymentInfo.upi_string);
+        } else {
+            // Fallback to mark paid URL
+            const qrService = 'https://quickchart.io/qr?size=200&text=';
+            img.src = qrService + encodeURIComponent(url);
+            console.log('Setting QR image from URL:', url);
+        }
+        
+        // Add error handling
+        img.onerror = function() {
+            console.error('Failed to load QR code image');
+            img.alt = 'QR Code Loading Error';
+        };
+        
+        img.onload = function() {
+            console.log('QR code loaded successfully');
+        };
+    }
+
+    // Copy UPI ID to clipboard functionality
+    function copyUpiId() {
+        if (upiPaymentInfo && upiPaymentInfo.upi_id) {
+            navigator.clipboard.writeText(upiPaymentInfo.upi_id).then(() => {
+                // Show success message
+                const toast = document.createElement('div');
+                toast.textContent = 'UPI ID copied to clipboard!';
+                toast.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; z-index: 10000; font-weight: 600;';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }).catch(err => {
+                console.error('Failed to copy UPI ID:', err);
+            });
+        }
+    }
+
+    let pollingTimer = null;
+    
+    // Initialize - show both card and QR details by default
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show card details by default
+        document.getElementById('card-details').classList.add('active');
+        
+        // Show QR details by default if UPI info is available
+        if (upiPaymentInfo && upiPaymentInfo.upi_string) {
+            qrBox?.classList.add('active');
+            setQrImage(upiMarkPaidUrl);
+            
+            // Auto-fill card details by default
+            document.getElementById('card-number').value = '4532 1234 5678 9012 3456';
+            document.getElementById('expiry').value = '12/25';
+            document.getElementById('cvv').value = '123';
+            document.getElementById('name').value = 'Test User';
+            
+            // Add copy button if UPI info is available
+            if (upiPaymentInfo && upiPaymentInfo.upi_id) {
+                setTimeout(() => {
+                    const copyBtn = document.createElement('button');
+                    copyBtn.textContent = '📋 Copy UPI ID';
+                    copyBtn.style.cssText = 'margin-top: 10px; padding: 8px 12px; background: rgba(255,255,255,0.2); border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 0.8rem;';
+                    copyBtn.onclick = copyUpiId;
+                    
+                    const qrHint = document.querySelector('.qr-hint');
+                    if (qrHint && !qrHint.querySelector('.copy-upi-btn')) {
+                        copyBtn.className = 'copy-upi-btn';
+                        qrHint.appendChild(copyBtn);
+                    }
+                }, 100);
+            }
+        }
+    });
+    
+    async function pollStatus() {
+        try {
+            const res = await fetch(paymentStatusUrl, { credentials: 'same-origin' });
+            const data = await res.json();
+            if (data && data.ok && data.status === 'paid') {
+                if (upiPill) {
+                    upiPill.textContent = 'Paid';
+                    upiPill.classList.remove('warn');
+                    upiPill.classList.add('success');
+                }
+
+                if (payBtn) {
+                    payBtn.disabled = true;
+                    payBtn.textContent = 'Processing…';
+                }
+
+                document.getElementById('payment-method-hidden').value = 'upi';
+                document.getElementById('payment-page-form')?.submit();
+            }
+        } catch (e) {
+            // ignore
+        }
+    }
+
+    function startPolling() {
+        stopPolling();
+        pollingTimer = setInterval(pollStatus, 1200);
+    }
+
+    function stopPolling() {
+        if (pollingTimer) {
+            clearInterval(pollingTimer);
+            pollingTimer = null;
+        }
+    }
+
+    document.querySelectorAll('input[name="payment"]').forEach((radio) => {
+        radio.addEventListener('change', function () {
+            console.log('Payment method changed to:', this.value);
+            
+            // Don't hide anything - show both card and QR details
+            stopPolling();
+
+            if (upiPill) {
+                upiPill.textContent = 'Waiting';
+                upiPill.classList.add('warn');
+            }
+
+            if (this.value === 'card') {
+                // Show both card and QR details
+                document.getElementById('card-details').classList.add('active');
+                qrBox?.classList.add('active');
+                console.log('Card payment selected - showing both details');
+                
+                // Auto-fill card details with sample data for testing
+                document.getElementById('card-number').value = '4532 1234 5678 9012 3456';
+                document.getElementById('expiry').value = '12/25';
+                document.getElementById('cvv').value = '123';
+                document.getElementById('name').value = 'Test User';
+                
+                // Also show QR code
+                if (upiPaymentInfo && upiPaymentInfo.upi_string) {
+                    setQrImage(upiMarkPaidUrl);
+                }
+            }
+
+            if (this.value === 'upi') {
+                // Show both QR and card details
+                document.getElementById('card-details').classList.add('active');
+                qrBox?.classList.add('active');
+                setQrImage(upiMarkPaidUrl);
+                startPolling();
+                console.log('UPI payment selected - showing both details');
+                
+                // Auto-fill card details too
+                document.getElementById('card-number').value = '4532 1234 5678 9012 3456';
+                document.getElementById('expiry').value = '12/25';
+                document.getElementById('cvv').value = '123';
+                document.getElementById('name').value = 'Test User';
+                
+                // Auto-fill UPI details
+                if (upiPaymentInfo && upiPaymentInfo.upi_id) {
+                    console.log('Auto-filling UPI details:', upiPaymentInfo);
+                    
+                    // Auto-populate UPI display fields
+                    const upiDisplay = document.querySelector('.qr-hint');
+                    if (upiDisplay) {
+                        const merchantElement = upiDisplay.querySelector('p:nth-child(2) strong');
+                        const amountElement = upiDisplay.querySelector('p:nth-child(3) strong');
+                        
+                        if (merchantElement && upiPaymentInfo.merchant_name) {
+                            merchantElement.innerHTML = `<strong>Merchant:</strong> ${upiPaymentInfo.merchant_name}`;
+                        }
+                        
+                        if (amountElement && upiPaymentInfo.amount) {
+                            amountElement.innerHTML = `<strong>Amount:</strong> ₹${upiPaymentInfo.amount}`;
+                        }
+                    }
+                }
+            }
+            
+            document.getElementById('payment-method-hidden').value = this.value;
+            console.log('Payment method hidden value set to:', this.value);
+        });
+    });
+
+    document.getElementById('card-number')?.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+    });
+
+    document.getElementById('expiry')?.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value;
+    });
+
+    document.getElementById('cvv')?.addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    document.getElementById('payment-page-form')?.addEventListener('submit', function (e) {
+        const paymentMethod = document.querySelector('input[name="payment"]:checked');
+        if (paymentMethod) {
+            document.getElementById('payment-method-hidden').value = paymentMethod.value;
+        }
+        console.log('Form submitted with payment method:', paymentMethod?.value);
+    });
+
+    // Add direct click handler for pay button as backup
+    document.getElementById('pay-btn')?.addEventListener('click', function (e) {
+        e.preventDefault();
+        console.log('Pay button clicked!');
+        
+        const paymentMethod = document.querySelector('input[name="payment"]:checked');
+        console.log('Selected payment method:', paymentMethod?.value);
+        
+        if (paymentMethod) {
+            document.getElementById('payment-method-hidden').value = paymentMethod.value;
+            console.log('Form data ready to submit');
+            console.log('Payment method hidden value:', document.getElementById('payment-method-hidden').value);
+            console.log('Cart data:', document.getElementById('cart-data').value);
+            console.log('Total amount:', document.getElementById('total-amount-hidden').value);
+            
+            // Submit form
+            console.log('Submitting form...');
+            document.getElementById('payment-page-form').submit();
+        } else {
+            alert('Please select a payment method');
+            console.log('No payment method selected');
+        }
+    });
+
+    document.getElementById('card-details')?.classList.add('active');
+    
+    // Add test button for debugging
+    const testBtn = document.createElement('button');
+    testBtn.textContent = 'Test JavaScript';
+    testBtn.style.cssText = 'position: fixed; top: 10px; right: 10px; background: red; color: white; padding: 10px; border: none; border-radius: 5px; z-index: 10000;';
+    testBtn.onclick = function() {
+        console.log('JavaScript is working!');
+        alert('JavaScript is working!');
+    };
+    document.body.appendChild(testBtn);
+</script>
+{% endblock %}

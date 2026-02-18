@@ -1,0 +1,1572 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DineAt - Restaurant Management{% endblock %}</title>
+
+    <!-- Fonts and Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Segoe+UI:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+
+    <style>
+        /* Help Modal Styles */
+        .help-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .help-modal-content {
+            background: linear-gradient(135deg, #233D4C, #2c5282);
+            margin: 0;
+            padding: 0;
+            border-radius: 0;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: none;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .help-modal-header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 30px;
+            border-radius: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .help-modal-header h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .help-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .help-close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .help-modal-body {
+            padding: 30px;
+            color: white;
+        }
+
+        .help-section {
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .help-section:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .help-section h3 {
+            color: #4ade80;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .help-section ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .help-section li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .help-section strong {
+            color: #fbbf24;
+        }
+
+        .help-section p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+
+        /* Scrollbar for modal */
+        .help-modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .help-modal-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .help-modal-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .help-modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .messages-container .notification {
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .messages-container .notification.fade-out {
+            opacity: 0;
+            transform: translateX(12px);
+        }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+        }
+
+        .chatbot-bubble {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chatbot-bubble:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .chatbot-bubble i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        .chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .chatbot-window.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chatbot-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-avatar i {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .chatbot-details h4 {
+            color: white;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .chatbot-status {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chatbot-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .bot-message {
+            align-items: flex-start;
+        }
+
+        .user-message {
+            align-items: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .bot-message .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-content p {
+            margin: 0 0 8px 0;
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-content ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .message-content li {
+            margin-bottom: 4px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin: 0 12px;
+        }
+
+        /* Typing Indicator Styles */
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        .chatbot-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quick-actions button {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .quick-actions button:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .chatbot-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chatbot-input-group input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 25px;
+            outline: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-input-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .chatbot-input-group button {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-input-group button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Scrollbar for chat messages */
+        .chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .chatbot-container {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .chatbot-window {
+                width: calc(100vw - 40px);
+                height: 60vh;
+                right: -10px;
+            }
+
+            .quick-actions {
+                justify-content: center;
+            }
+
+            .quick-actions button {
+                font-size: 0.7rem;
+                padding: 6px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chatbot-window {
+                width: calc(100vw - 20px);
+                height: 70vh;
+                right: -5px;
+            }
+        }
+
+        /* Cookie Consent Styles */
+        .cookie-consent {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            z-index: 10000;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .cookie-consent.show {
+            transform: translateY(0);
+        }
+
+        .cookie-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .cookie-text h4 {
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .cookie-text p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .cookie-buttons {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .cookie-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .accept-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .accept-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .reject-btn {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .reject-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-btn {
+            background: transparent;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .settings-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        /* WhatsApp Button Styles */
+        .whatsapp-button {
+            position: fixed;
+            bottom: 30px;
+            left: 20px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+            z-index: 9997;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .whatsapp-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+            background: linear-gradient(135deg, #128C7E, #25D366);
+        }
+
+        .whatsapp-button i {
+            font-size: 1.5rem;
+            animation: whatsapp-pulse 2s infinite;
+        }
+
+        .whatsapp-text {
+            opacity: 0;
+            max-width: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .whatsapp-button:hover .whatsapp-text {
+            opacity: 1;
+            max-width: 120px;
+        }
+
+        @keyframes whatsapp-pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover i {
+            transform: rotate(180deg);
+        }
+
+        /* Dark Theme Styles */
+        .dark-theme {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .dark-theme .navbar {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+        }
+
+        .dark-theme .footer {
+            background: #1a1a1a;
+            border-top: 1px solid #333;
+        }
+
+        .dark-theme .chatbot-window {
+            background: #2d2d2d;
+            color: #ffffff;
+        }
+
+        .dark-theme .chatbot-messages {
+            background: #1a1a1a;
+        }
+
+        .dark-theme .message-content {
+            color: #ffffff;
+        }
+
+        .dark-theme .bot-message .message-content {
+            background: #2d2d2d;
+            border-color: #444;
+        }
+
+        .dark-theme .chatbot-input-container {
+            background: #2d2d2d;
+            border-top-color: #444;
+        }
+
+        .dark-theme .chatbot-input-group input {
+            background: #1a1a1a;
+            color: #ffffff;
+            border-color: #444;
+        }
+
+        .dark-theme .quick-actions button {
+            background: #2d2d2d;
+            color: #ffffff;
+            border-color: #444;
+        }
+
+        .dark-theme .quick-actions button:hover {
+            background: #3d3d3d;
+        }
+
+        /* Mobile Responsive for Cookie Consent */
+        @media (max-width: 768px) {
+            .cookie-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .cookie-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .cookie-btn {
+                font-size: 0.8rem;
+                padding: 8px 16px;
+            }
+
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+            }
+
+            .whatsapp-button {
+                bottom: 20px;
+                left: 15px;
+                padding: 12px 15px;
+                border-radius: 40px;
+            }
+
+            .whatsapp-button i {
+                font-size: 1.3rem;
+            }
+
+            .whatsapp-button:hover .whatsapp-text {
+                max-width: 100px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .whatsapp-button {
+                bottom: 90px; /* Above chatbot bubble */
+                left: 10px;
+                padding: 10px 12px;
+                border-radius: 35px;
+            }
+
+            .whatsapp-button i {
+                font-size: 1.2rem;
+            }
+
+            .whatsapp-text {
+                display: none; /* Hide text on very small screens */
+            }
+
+            .whatsapp-button:hover {
+                transform: translateY(-3px) scale(1.1);
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <span>DineAt</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="{% url 'main:index' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}">Home</a>
+                    </li>
+                    <li><a href="{% url 'main:about' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About
+                            Us</a></li>
+                    <li><a href="{% url 'main:contact' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
+                    </li>
+                    <li><a href="{% url 'main:help' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'help' %}active{% endif %}">Help</a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    {% if user.is_customer %}
+                    <li><a href="{% url 'accounts:profile' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">👤 Profile</a></li>
+                    <li><a href="{% url 'accounts:order_history' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'order_history' %}active{% endif %}">📋 Orders</a></li>
+
+                    {% elif user.is_admin %}
+                    <li><a href="{% url 'dashboard:admin_dashboard' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">🎛️ Dashboard</a></li>
+                    {% elif user.is_kitchen_staff %}
+                    <li><a href="{% url 'dashboard:kitchen_dashboard' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'kitchen_dashboard' %}active{% endif %}">👨‍🍳 Kitchen</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'accounts:logout' %}" class="nav-link">Logout</a></li>
+                    {% else %}
+                    <li><a href="{% url 'accounts:login' %}"
+                            class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    {% if messages %}
+    <div class="messages-container" id="messages-container" style="position: fixed; top: 100px; right: 20px; z-index: 9999;">
+        {% for message in messages %}
+        <div class="notification {{ message.tags }} msg-notification"
+            style="background: #233D4C; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; color: white;">
+            <i class="fas fa-info-circle" style="color: white;"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 DineAt. Premium Restaurant Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Cookie Consent Banner -->
+    <div class="cookie-consent" id="cookieConsent" style="display: none;">
+        <div class="cookie-content">
+            <div class="cookie-text">
+                <h4>🍪 Cookies Notice</h4>
+                <p>We use cookies to enhance your experience, remember your preferences, and provide personalized content.</p>
+            </div>
+            <div class="cookie-buttons">
+                <button class="cookie-btn accept-btn" onclick="acceptCookies()">Accept All</button>
+                <button class="cookie-btn reject-btn" onclick="rejectCookies()">Essential Only</button>
+                <button class="cookie-btn settings-btn" onclick="showCookieSettings()">Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/919363135589" 
+       target="_blank" 
+       class="whatsapp-button" 
+       title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+        <span class="whatsapp-text">Chat with us</span>
+    </a>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Help Modal -->
+    <div class="help-modal" id="helpModal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h2>📚 Help & Support</h2>
+                <button class="help-close-btn" onclick="closeHelpModal()">&times;</button>
+            </div>
+            <div class="help-modal-body">
+                <div class="help-section">
+                    <h3>🍽️ For Customers</h3>
+                    <ul>
+                        <li><strong>Browse Menu:</strong> View our delicious food items</li>
+                        <li><strong>Add to Cart:</strong> Select items and add to your cart</li>
+                        <li><strong>Select Table:</strong> Choose your preferred table</li>
+                        <li><strong>Payment:</strong> Pay via COD, Card, UPI, or Wallet</li>
+                        <li><strong>Track Order:</strong> Monitor your order status</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <h3>👨‍🍳 For Kitchen Staff</h3>
+                    <ul>
+                        <li><strong>View Orders:</strong> See incoming orders</li>
+                        <li><strong>Update Status:</strong> Mark orders as preparing/ready</li>
+                        <li><strong>Manage Queue:</strong> Handle order priority</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <h3>📊 For Admin</h3>
+                    <ul>
+                        <li><strong>Dashboard:</strong> View real-time statistics</li>
+                        <li><strong>Order Management:</strong> Manage all orders</li>
+                        <li><strong>Revenue Tracking:</strong> Monitor daily revenue</li>
+                        <li><strong>Clear Orders:</strong> Remove old order data</li>
+                    </ul>
+                </div>
+                
+                <div class="help-section">
+                    <h3>📞 Contact Support</h3>
+                    <p><strong>Email:</strong> dineatofficial@gmail.com</p>
+                    <p><strong>Phone:</strong> +91 9363135589</p>
+                    <p><strong>Hours:</strong> 24/7 Support Available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <div class="chatbot-bubble" id="chatbotBubble" onclick="toggleChatbot()">
+            <i class="fas fa-comments"></i>
+            <span class="chat-badge">3</span>
+        </div>
+        
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <div class="chatbot-info">
+                    <div class="chatbot-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chatbot-details">
+                        <h4>DineAt Assistant</h4>
+                        <span class="chatbot-status">Online</span>
+                    </div>
+                </div>
+                <button class="chatbot-close" onclick="toggleChatbot()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        <p>👋 Hello! Welcome to DineAt! I'm here to help you with:</p>
+                        <ul>
+                            <li>🍽️ Ordering food</li>
+                            <li>� Table reservations</li>
+                            <li>💳 Payment options</li>
+                            <li>📍 Order tracking</li>
+                        </ul>
+                        <p>How can I assist you today?</p>
+                    </div>
+                    <span class="message-time">Just now</span>
+                </div>
+            </div>
+            
+            <div class="chatbot-input-container">
+                <div class="quick-actions">
+                    <button onclick="sendQuickMessage('Show menu')">📋 Menu</button>
+                    <button onclick="sendQuickMessage('Track order')">📍 Track Order</button>
+                    <button onclick="sendQuickMessage('Payment help')">💳 Payment</button>
+                    <button onclick="sendQuickMessage('Table booking')">🍽️ Table</button>
+                </div>
+                <div class="chatbot-input-group">
+                    <input type="text" id="chatbotInput" placeholder="Type your message..." onkeypress="handleChatInput(event)">
+                    <button onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JS -->
+    <script src="{% static 'js/script.js' %}"></script>
+    
+    <script>
+        // Help Modal Functions
+        function showHelpModal() {
+            document.getElementById('helpModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+            // Remove backdrop blur for full page experience
+            document.querySelector('.help-modal').style.backdropFilter = 'none';
+            document.querySelector('.help-modal').style.backgroundColor = '#233D4C';
+        }
+
+        function closeHelpModal() {
+            document.getElementById('helpModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scroll
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('DOMContentLoaded', function () {
+            const hamburger = document.querySelector('.hamburger');
+            const navMenu = document.querySelector('.nav-menu');
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const container = document.getElementById('messages-container');
+                if (!container) {
+                    return;
+                }
+
+                const messages = Array.from(container.querySelectorAll('.notification'));
+                if (messages.length === 0) {
+                    return;
+                }
+
+                setTimeout(() => {
+                    messages.forEach((el) => {
+                        el.classList.add('fade-out');
+                        setTimeout(() => {
+                            if (el.parentNode) {
+                                el.parentNode.removeChild(el);
+                            }
+                            if (container.childElementCount === 0 && container.parentNode) {
+                                container.parentNode.removeChild(container);
+                            }
+                        }, 260);
+                    });
+                }, 2000);
+            } catch (e) {
+                // no-op
+            }
+        });
+
+        // Chatbot Functions
+        function toggleChatbot() {
+            const chatbotWindow = document.getElementById('chatbotWindow');
+            const chatbotBubble = document.querySelector('.chat-badge');
+            
+            chatbotWindow.classList.toggle('active');
+            
+            // Remove badge when chat is opened
+            if (chatbotWindow.classList.contains('active')) {
+                chatbotBubble.style.display = 'none';
+                // Focus on input
+                document.getElementById('chatbotInput').focus();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatbotInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Send to Gemini AI backend
+            fetch('/chatbot/query/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    'message': message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideTypingIndicator();
+                if (data.status === 'success') {
+                    addMessage(data.response, 'bot');
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                }
+            })
+            .catch(error => {
+                hideTypingIndicator();
+                console.error('Error:', error);
+                addMessage('Sorry, I\'m having trouble connecting. Please try again later.', 'bot');
+            });
+        }
+
+        function sendQuickMessage(message) {
+            addMessage(message, 'user');
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Send to Gemini AI backend
+            fetch('/chatbot/query/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    'message': message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideTypingIndicator();
+                if (data.status === 'success') {
+                    addMessage(data.response, 'bot');
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                }
+            })
+            .catch(error => {
+                hideTypingIndicator();
+                console.error('Error:', error);
+                addMessage('Sorry, I\'m having trouble connecting. Please try again later.', 'bot');
+            });
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatbotMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <span class="message-time">typing...</span>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.querySelector('.typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatbotMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <p>${text}</p>
+                </div>
+                <span class="message-time">${time}</span>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function getBotResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Menu related responses
+            if (lowerMessage.includes('menu') || lowerMessage.includes('food')) {
+                return `🍽️ Here's what I can help you with regarding our menu:\n\n• Browse our complete menu by clicking the "Menu" button in navigation\n• Add items to your cart with one click\n• Filter by vegetarian and non-vegetarian options\n• See prices and ratings for each item\n\nWould you like me to redirect you to the menu page?`;
+            }
+            
+            // Order tracking responses
+            if (lowerMessage.includes('track') || lowerMessage.includes('order')) {
+                return `📍 To track your order:\n\n1. Go to your cart page\n2. Click "Confirm Order" to place it\n3. You'll receive real-time updates\n4. Check your email for order confirmation\n\nCurrent orders will show preparation status and estimated delivery time.`;
+            }
+            
+            // Payment help responses
+            if (lowerMessage.includes('payment') || lowerMessage.includes('pay')) {
+                return `💳 We accept multiple payment methods:\n\n• 💵 Cash on Delivery\n• 💳 Credit/Debit Cards (Visa, Mastercard, Rupay)\n• 📱 UPI (GPay, PhonePe, Paytm)\n• 👛 Digital Wallets\n\nAll payments are secure and processed instantly. Choose your preferred method at checkout!`;
+            }
+            
+            // Table booking responses
+            if (lowerMessage.includes('table') || lowerMessage.includes('booking') || lowerMessage.includes('reservation')) {
+                return `🍽️ For table reservations:\n\n• Select your preferred table when ordering\n• See real-time table availability\n• Choose from different seating areas\n• Get instant confirmation\n\nTables are automatically reserved when you place your order. You can also call us at +91 98765 43210.`;
+            }
+            
+            // Contact/support responses
+            if (lowerMessage.includes('contact') || lowerMessage.includes('help') || lowerMessage.includes('support')) {
+                return `📞 Need help? Here's how to reach us:\n\n• 📧 Email: support@dineat.com\n• 📱 Phone: +91 98765 43210\n• 💬 Live Chat: That's me! 😊\n• 🕐 Hours: 24/7 Support Available\n\nI'm here to help with any questions about ordering, menu, payments, or table reservations!`;
+            }
+            
+            // Delivery responses
+            if (lowerMessage.includes('delivery') || lowerMessage.includes('deliver')) {
+                return `🚚 Delivery Information:\n\n• 📍 Delivery within 5km radius\n• ⏰ Average delivery time: 30-45 minutes\n• 🛵 Free delivery on orders above ₹500\n• 📱 Real-time delivery tracking\n• 💰 Delivery charge: ₹40 for orders below ₹500\n\nEnter your address at checkout for precise delivery time!`;
+            }
+            
+            // Default response
+            return `🤔 I'm not sure about that, but I can help you with:\n\n• 🍽️ Menu browsing and ordering\n• 📋 Table reservations\n• 💳 Payment options\n• 📍 Order tracking\n• 🚚 Delivery information\n• 📞 Contact support\n\nTry asking about any of these topics, or click the quick action buttons below!`;
+        }
+
+        // Close chatbot when clicking outside
+        document.addEventListener('click', function(event) {
+            const chatbotContainer = document.querySelector('.chatbot-container');
+            const chatbotWindow = document.getElementById('chatbotWindow');
+            
+            if (!chatbotContainer.contains(event.target) && chatbotWindow.classList.contains('active')) {
+                chatbotWindow.classList.remove('active');
+            }
+        });
+
+        // Check chatbot status on load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/chatbot/status/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'unavailable') {
+                        console.warn('Chatbot is not available:', data.message);
+                        // Update chatbot status to offline
+                        const statusElement = document.querySelector('.chatbot-status');
+                        if (statusElement) {
+                            statusElement.textContent = 'Offline';
+                            statusElement.style.color = '#ff4757';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking chatbot status:', error);
+                });
+        });
+
+        // Initialize chatbot badge with random number
+        document.addEventListener('DOMContentLoaded', function() {
+            const badge = document.querySelector('.chat-badge');
+            if (badge) {
+                badge.textContent = Math.floor(Math.random() * 5) + 1;
+            }
+        });
+
+        // Cookie Management Functions
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + '=' + value + ';expires=' + expires.toUTCString() + ';path=/';
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function deleteCookie(name) {
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';
+        }
+
+        // Save user preferences
+        function savePreferences(preferences) {
+            fetch('/save-preferences/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(preferences)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Preferences saved:', data.message);
+                } else {
+                    console.error('Error saving preferences:', data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            fetch('/toggle-theme/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Apply theme immediately
+                    if (data.theme === 'dark') {
+                        document.body.classList.add('dark-theme');
+                    } else {
+                        document.body.classList.remove('dark-theme');
+                    }
+                    console.log('Theme changed:', data.message);
+                } else {
+                    console.error('Error changing theme:', data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Show cookie information (for debugging)
+        function showCookieInfo() {
+            fetch('/cookie-info/')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Active cookies:', data.cookies);
+                console.log('Total cookies:', data.count);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Remember user preferences
+        function rememberUserPreference(key, value) {
+            const preferences = JSON.parse(getCookie('user_preferences') || '{}');
+            preferences[key] = value;
+            savePreferences(preferences);
+        }
+
+        // Get user preference
+        function getUserPreference(key, defaultValue = null) {
+            const preferences = JSON.parse(getCookie('user_preferences') || '{}');
+            return preferences[key] || defaultValue;
+        }
+
+        // Cookie Consent Functions
+        function acceptCookies() {
+            // Set cookie consent accepted
+            setCookie('cookie_consent', 'accepted', 365);
+            
+            // Set user preferences cookie
+            savePreferences({
+                'cookies_accepted': true,
+                'theme': getCookie('theme') || 'light',
+                'language': getCookie('language') || 'en',
+                'notifications': true
+            });
+            
+            // Hide cookie banner
+            const cookieBanner = document.getElementById('cookieConsent');
+            cookieBanner.classList.remove('show');
+            
+            console.log('🍪 All cookies accepted');
+        }
+
+        function rejectCookies() {
+            // Set only essential cookies
+            setCookie('cookie_consent', 'essential', 365);
+            
+            // Hide cookie banner
+            const cookieBanner = document.getElementById('cookieConsent');
+            cookieBanner.classList.remove('show');
+            
+            console.log('🍪 Only essential cookies accepted');
+        }
+
+        function showCookieSettings() {
+            // Show settings modal (you can implement this)
+            alert('Cookie settings page coming soon! For now, you can:\n\n• Accept All: Enable all cookies\n• Essential Only: Only required cookies\n\nCurrent cookies: ' + Object.keys(document.COOKIES || {}).join(', '));
+        }
+
+        // Update theme icon when theme changes
+        function updateThemeIcon(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+
+        // Apply theme on page load and initialize other features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply saved theme immediately
+            const theme = getCookie('theme') || 'light';
+            applyTheme(theme);
+            
+            // Update theme icon based on current theme
+            updateThemeIcon(theme);
+            
+            // Check cookie consent
+            const cookieConsent = getCookie('cookie_consent');
+            if (!cookieConsent) {
+                // Show cookie consent banner after 2 seconds
+                setTimeout(() => {
+                    const cookieBanner = document.getElementById('cookieConsent');
+                    cookieBanner.style.display = 'block';
+                    setTimeout(() => {
+                        cookieBanner.classList.add('show');
+                    }, 100);
+                }, 2000);
+            }
+            
+            // Initialize chatbot badge
+            const badge = document.querySelector('.chat-badge');
+            if (badge) {
+                badge.textContent = Math.floor(Math.random() * 5) + 1;
+            }
+            
+            // Check chatbot status
+            fetch('/chatbot/status/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'unavailable') {
+                        console.warn('Chatbot is not available:', data.message);
+                        const statusElement = document.querySelector('.chatbot-status');
+                        if (statusElement) {
+                            statusElement.textContent = 'Offline';
+                            statusElement.style.color = '#ff4757';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking chatbot status:', error);
+                });
+        });
+
+        // Apply theme function
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.classList.add('dark-theme');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                document.body.classList.remove('dark-theme');
+            }
+        }
+
+        // Update theme icon function
+        function updateThemeIcon(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+
+        // Enhanced toggle theme function
+        function toggleTheme() {
+            // Add transition class
+            document.body.classList.add('theme-transitioning');
+            
+            // Get current theme
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // Apply new theme
+            applyTheme(newTheme);
+            updateThemeIcon(newTheme);
+            
+            // Save theme preference
+            setCookie('theme', newTheme, 365);
+            
+            // Remove transition class after animation
+            setTimeout(() => {
+                document.body.classList.remove('theme-transitioning');
+            }, 300);
+            
+            // Optional: Send to server for persistence
+            fetch('/toggle-theme/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ theme: newTheme })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Theme saved:', data.message || newTheme);
+            })
+            .catch(error => {
+                console.log('Theme changed locally:', newTheme);
+            });
+        }
+
+    </script>
+    
+{% block extra_js %}{% endblock %}
+</body>
+
+</html>

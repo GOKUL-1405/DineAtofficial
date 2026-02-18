@@ -1,0 +1,789 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Table Selection - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #233D4C !important;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .table-selection {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+    }
+
+    /* Professional Header */
+    .professional-header {
+        margin: 2rem 0;
+        background: #233D4C;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .status-badge i {
+        font-size: 0.5rem;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .professional-header h3 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        color: #ffffff;
+    }
+
+    .page-subtitle {
+        font-size: 1.125rem;
+        color: #e2e8f0;
+        font-weight: 400;
+    }
+
+    .quick-stats {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 140px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        font-size: 1.25rem;
+        color: white;
+    }
+
+    .stat-icon.available {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .stat-icon.occupied {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #e2e8f0;
+    }
+
+    /* Professional Grid */
+    .professional-grid {
+        margin: 2rem 0;
+    }
+
+    .grid-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .grid-header h2 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .legend {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #e2e8f0;
+    }
+
+    .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .legend-dot.available {
+        background: #10b981;
+    }
+
+    .legend-dot.occupied {
+        background: #ef4444;
+    }
+
+    .legend-dot.selected {
+        background: #3b82f6;
+    }
+
+    .table-grid {
+        display: grid;
+        gap: 2rem;
+    }
+
+    /* Zone Section */
+    .zone-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .zone-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .zone-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: #3b82f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #ffffff;
+    }
+
+    .zone-info h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.25rem;
+    }
+
+    .zone-info p {
+        font-size: 0.875rem;
+        color: #e2e8f0;
+    }
+
+    .zone-tables {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Table Card */
+    .table-card {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 2px solid transparent;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .table-card.available {
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .table-card.available:hover {
+        border-color: #10b981;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+    }
+
+    .table-card.occupied {
+        opacity: 0.6;
+        cursor: not-allowed;
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .table-card.selected {
+        border-color: #3b82f6;
+        background: rgba(59, 130, 246, 0.2);
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+    }
+
+    .table-number {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 1rem;
+    }
+
+    .table-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .seats {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #ffffff;
+    }
+
+    .table-status {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+    }
+
+    .table-card.available .table-status {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .table-card.occupied .table-status {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+
+    /* Selection Panel */
+    .selection-panel {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 3rem;
+    }
+
+    .panel-header h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .no-selection {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #94a3b8;
+        font-size: 0.875rem;
+        padding: 2rem;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .selection-details {
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .selected-table {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .table-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: #3b82f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: #ffffff;
+    }
+
+    .table-info h4 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.25rem;
+    }
+
+    .table-info p {
+        font-size: 0.875rem;
+        color: #e2e8f0;
+    }
+
+    .table-specs {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .spec-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #e2e8f0;
+        font-size: 0.875rem;
+    }
+
+    .spec-item i {
+        color: #3b82f6;
+    }
+
+    .panel-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(59, 130, 246, 0.2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3b82f6;
+    }
+
+    .feature-text h4 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+
+    .feature-text p {
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+
+    .panel-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: white;
+        flex: 1;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .quick-stats {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .stat-card {
+            min-width: auto;
+            flex: 1;
+        }
+
+        .grid-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .zone-tables {
+            grid-template-columns: 1fr;
+        }
+
+        .panel-actions {
+            flex-direction: column;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="table-selection">
+    <div class="container">
+        <!-- Professional Header -->
+        <div class="professional-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="status-badge">
+                        <i class="fas fa-circle"></i>
+                        <span>Live Availability</span>
+                    </div>
+                    <h3>Select Your Dining Table</h3>
+                    <p class="page-subtitle">Choose from our premium seating arrangements</p>
+                </div>
+                <div class="header-right">
+                    <div class="quick-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chair"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-number">8</div>
+                                <div class="stat-label">Total Tables</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon available">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-number">5</div>
+                                <div class="stat-label">Available</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon occupied">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-number">3</div>
+                                <div class="stat-label">Occupied</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Table Grid -->
+        <div class="professional-grid">
+            <div class="grid-header">
+                <h2>Restaurant Floor Plan</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-dot available"></div>
+                        <span>Available</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot occupied"></div>
+                        <span>Occupied</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot selected"></div>
+                        <span>Selected</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-grid">
+                {% if tables %}
+                    {% regroup tables by capacity as capacity_groups %}
+                    {% for capacity_group in capacity_groups %}
+                    <div class="zone-section">
+                        <div class="zone-header">
+                            <div class="zone-icon">
+                                {% if capacity_group.grouper <= 2 %}
+                                    <i class="fas fa-heart"></i>
+                                {% elif capacity_group.grouper <= 4 %}
+                                    <i class="fas fa-utensils"></i>
+                                {% elif capacity_group.grouper <= 6 %}
+                                    <i class="fas fa-crown"></i>
+                                {% else %}
+                                    <i class="fas fa-champagne-glasses"></i>
+                                {% endif %}
+                            </div>
+                            <div class="zone-info">
+                                <h3>
+                                    {% if capacity_group.grouper <= 2 %}
+                                        Intimate Corner
+                                    {% elif capacity_group.grouper <= 4 %}
+                                        Main Dining
+                                    {% elif capacity_group.grouper <= 6 %}
+                                        Premium Zone
+                                    {% else %}
+                                        Celebration Hall
+                                    {% endif %}
+                                </h3>
+                                <p>
+                                    {% if capacity_group.grouper <= 2 %}
+                                        Perfect for couples
+                                    {% elif capacity_group.grouper <= 4 %}
+                                        Family & groups
+                                    {% elif capacity_group.grouper <= 6 %}
+                                        VIP experience
+                                    {% else %}
+                                        Parties & events
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="zone-tables">
+                            {% for table in capacity_group.list %}
+                            <form method="post" action="{% url 'orders:table_selection' %}" style="width: 100%;">
+                                {% csrf_token %}
+                                <div class="table-card available" onclick="this.closest('form').submit()" data-table="{{ table.id }}">
+                                    <div class="table-number">T{{ table.table_number }}</div>
+                                    <div class="table-details">
+                                        <div class="seats">
+                                            <i class="fas fa-users"></i>
+                                            <span>{{ table.capacity }} Seats</span>
+                                        </div>
+                                        <div class="table-status">Available</div>
+                                    </div>
+                                    <input type="hidden" name="table_id" value="{{ table.id }}">
+                                </div>
+                            </form>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="zone-section">
+                    <div class="zone-header">
+                        <div class="zone-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="zone-info">
+                            <h3>No Tables Available</h3>
+                            <p>Please check back later</p>
+                        </div>
+                    </div>
+                    <div class="zone-tables">
+                        <div class="no-tables">
+                            <p>All tables are currently occupied. Please try again later.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+     
+    </div>
+</section>
+
+<script>
+    let selectedTable = null;
+
+    function selectTable(tableNumber) {
+        // Remove previous selection
+        document.querySelectorAll('.table-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Add selection to clicked table
+        const selectedCard = document.querySelector(`[data-table="${tableNumber}"]`);
+        if (selectedCard && selectedCard.classList.contains('available')) {
+            selectedCard.classList.add('selected');
+            selectedTable = tableNumber;
+            updateSelectionInfo(tableNumber);
+            document.getElementById('confirm-btn').disabled = false;
+
+            showNotification(`Table ${tableNumber} selected!`);
+        }
+    }
+
+    function updateSelectionInfo(tableNumber) {
+        const selectedInfo = document.getElementById('selected-info');
+        const tableDetails = {
+            1: { name: 'Table 1', seats: 2, section: 'Intimate Corner' },
+            2: { name: 'Table 2', seats: 2, section: 'Intimate Corner' },
+            3: { name: 'Table 3', seats: 4, section: 'Main Dining' },
+            4: { name: 'Table 4', seats: 4, section: 'Main Dining' },
+            5: { name: 'Table 5', seats: 6, section: 'Premium Zone' },
+            6: { name: 'Table 6', seats: 6, section: 'Premium Zone' },
+            7: { name: 'Table 7', seats: 8, section: 'Celebration Hall' },
+            8: { name: 'Table 8', seats: 8, section: 'Celebration Hall' }
+        };
+
+        const details = tableDetails[tableNumber];
+        selectedInfo.innerHTML = `
+        <div class="selection-details">
+            <div class="selected-table">
+                <div class="table-icon">
+                    <i class="fas fa-chair"></i>
+                </div>
+                <div class="table-info">
+                    <h4>${details.name}</h4>
+                    <p>${details.section}</p>
+                </div>
+            </div>
+            <div class="table-specs">
+                <div class="spec-item">
+                    <i class="fas fa-users"></i>
+                    <span>${details.seats} Persons</span>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${details.section}</span>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Available</span>
+                </div>
+            </div>
+        </div>
+    `;
+    }
+
+    function confirmSelection() {
+        if (selectedTable) {
+            localStorage.setItem('selectedTable', selectedTable.toString());
+            showNotification(`Table ${selectedTable} confirmed! Redirecting to menu...`);
+
+            setTimeout(() => {
+                window.location.href = '{% url "orders:menu" %}';
+            }, 1500);
+        }
+    }
+
+    function resetSelection() {
+        selectedTable = null;
+        document.querySelectorAll('.table-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        document.getElementById('selected-info').innerHTML = `
+        <div class="no-selection">
+            <i class="fas fa-hand-pointer"></i>
+            <span>Select a table to continue</span>
+        </div>
+    `;
+        document.getElementById('confirm-btn').disabled = true;
+
+        showNotification('Selection reset');
+    }
+
+    // Animate table cards on load
+    document.addEventListener('DOMContentLoaded', function () {
+        const tableCards = document.querySelectorAll('.table-card');
+        tableCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+    });
+</script>
+{% endblock %}

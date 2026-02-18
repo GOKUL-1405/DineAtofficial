@@ -1,0 +1,412 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #233D4C !important;
+        color: white;
+    }
+
+    .profile-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+    }
+
+    .profile-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        flex-wrap: wrap;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        overflow: hidden;
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-info h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 0 0.5rem;
+    }
+
+    .profile-info .email {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1rem;
+        margin: 0 0 0.5rem;
+    }
+
+    .profile-info .member-since {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-section {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        padding: 1.5rem;
+    }
+
+    .profile-section h3 {
+        color: white;
+        font-size: 1.3rem;
+        font-weight: 800;
+        margin: 0 0 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        font-weight: 700;
+        color: white;
+        text-align: right;
+    }
+
+    .loyalty-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #10b981;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .recent-orders {
+        margin-top: 1.5rem;
+    }
+
+    .order-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .order-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .order-info h4 {
+        color: white;
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0 0 0.25rem;
+    }
+
+    .order-info p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .order-amount {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: #10b981;
+    }
+
+    .order-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .order-status.completed {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .order-status.pending {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+        .profile-card {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .profile-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .loyalty-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    {% if profile.profile_picture %}
+                        <img src="/media/{{ profile.profile_picture }}" alt="{{ profile.full_name }}">
+                    {% else %}
+                        <i class="fas fa-user"></i>
+                    {% endif %}
+                </div>
+                <div class="profile-info">
+                    <h1>{{ profile.full_name|default:user.username }}</h1>
+                    <p class="email">{{ user.email }}</p>
+                    <p class="member-since">Member since {{ user.date_joined|date:"F Y" }}</p>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div class="profile-section">
+                    <h3>📋 Personal Information</h3>
+                    <div class="info-item">
+                        <span class="info-label">Full Name</span>
+                        <span class="info-value">{{ profile.full_name|default:"Not set" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Phone Number</span>
+                        <span class="info-value">{{ user.phone_number|default:"Not set" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Date of Birth</span>
+                        <span class="info-value">{{ profile.date_of_birth|date:"d M Y"|default:"Not set" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ user.email }}</span>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3>🎯 Loyalty Program</h3>
+                    <div class="loyalty-stats">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ profile.loyalty_points }}</div>
+                            <div class="stat-label">Loyalty Points</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">{{ profile.total_orders }}</div>
+                            <div class="stat-label">Total Orders</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total Spent</span>
+                        <span class="info-value">₹{{ profile.total_spent|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div class="profile-section">
+                    <h3>📍 Address</h3>
+                    <div class="info-item">
+                        <span class="info-label">Address</span>
+                        <span class="info-value">{{ profile.full_address|default:"Not set" }}</span>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3>⚙️ Preferences</h3>
+                    <div class="info-item">
+                        <span class="info-label">Language</span>
+                        <span class="info-value">{{ profile.get_preferred_language_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Dietary Preferences</span>
+                        <span class="info-value">{{ profile.dietary_preferences|default:"None" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Food Allergies</span>
+                        <span class="info-value">{{ profile.food_allergies|default:"None" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>📦 Recent Orders</h3>
+                <div class="recent-orders">
+                    {% if orders %}
+                        {% for order in orders %}
+                        <div class="order-item">
+                            <div class="order-info">
+                                <h4>Order #{{ order.id }}</h4>
+                                <p>{{ order.created_at|date:"d M Y, H:i" }}</p>
+                                <span class="order-status {{ order.status|lower }}">{{ order.status }}</span>
+                            </div>
+                            <div class="order-amount">₹{{ order.total_amount|floatformat:2 }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <p>No orders yet. Start ordering to see your order history here!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">
+                    ✏️ Edit Profile
+                </a>
+                
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

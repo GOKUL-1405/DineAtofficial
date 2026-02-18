@@ -1,0 +1,933 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Contact Section */
+    .contact-section {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        background-color: #233D4C;
+        position: relative;
+    }
+
+    .contact-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #233D4C;
+        pointer-events: none;
+    }
+
+    /* Black text styling for all elements */
+    .contact-section h1,
+    .contact-section h2,
+    .contact-section h3,
+    .contact-section h4,
+    .contact-section p,
+    .contact-section li,
+    .contact-section span,
+    .contact-section div {
+        color: white !important;
+        font-weight: 600;
+    }
+
+    .contact-section h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: white !important;
+        margin-bottom: 2rem;
+    }
+
+    .contact-section h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white !important;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-section h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white !important;
+        margin-bottom: 1rem;
+    }
+
+    .contact-section p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white !important;
+        margin-bottom: 1rem;
+    }
+
+    /* Hero Section */
+    .contact-hero {
+        padding: 120px 0 80px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: #00b894;
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 2rem;
+    }
+
+    .main-title {
+        font-size: 4rem;
+        font-weight: 900;
+        color: white;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .quick-contact {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .quick-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1rem 1.5rem;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .quick-item:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .quick-item i {
+        color: #00b894;
+        font-size: 1.2rem;
+    }
+
+    .quick-item span {
+        color: white;
+        font-weight: 600;
+    }
+
+    /* Container */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Contact Grid */
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 5rem;
+    }
+
+    /* Section Headers */
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .section-header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Contact Cards */
+    .contact-cards {
+        display: grid;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .contact-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .contact-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #00b894, #00cec9, #55efc4);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .contact-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .contact-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .contact-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(145deg, #00b894, #00cec9);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .contact-card:hover .contact-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .contact-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .contact-details {
+        flex: 1;
+    }
+
+    .contact-details h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.8rem;
+    }
+
+    .contact-details p {
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .contact-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #00b894;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .contact-link:hover {
+        color: #00cec9;
+        transform: translateX(5px);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(0, 255, 0, 0.2);
+        color: #00ff00;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid rgba(0, 255, 0, 0.3);
+    }
+
+    .status-badge i {
+        font-size: 0.8rem;
+        animation: pulse 2s infinite;
+    }
+
+    /* Social Section */
+    .social-section {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .social-section h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1.5rem;
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .social-link {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .social-link:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-5px) scale(1.1);
+    }
+
+    .social-link i {
+        font-size: 1.3rem;
+    }
+
+    /* Form Section */
+    .form-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 3rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        margin-bottom: 2rem;
+    }
+
+    .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #00b894;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 0 4px rgba(0, 184, 148, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .form-group select {
+        cursor: pointer;
+    }
+
+    .form-group select option {
+        background: #2c3e50;
+        color: white;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-options {
+        margin-bottom: 1rem;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .checkbox-group input {
+        display: none;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .checkbox-group .checkmark {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .checkbox-group input:checked+label .checkmark {
+        background: #00b894;
+        border-color: #00b894;
+    }
+
+    .checkbox-group input:checked+label .checkmark::after {
+        content: '\f00c';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        color: white;
+        font-size: 0.7rem;
+    }
+
+    .submit-btn {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 15px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        box-shadow: 0 10px 30px rgba(0, 184, 148, 0.3);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 184, 148, 0.4);
+    }
+
+    .support-info {
+        text-align: center;
+    }
+
+    .support-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .support-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .support-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .support-content {
+        flex: 1;
+        text-align: left;
+    }
+
+    .support-content h4 {
+        color: white;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .support-content p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .support-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #00b894;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .support-btn:hover {
+        color: #00cec9;
+        transform: translateX(5px);
+    }
+
+    /* FAQ Section */
+    .faq-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 30px;
+        padding: 3rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .faq-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .faq-item {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .faq-question {
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .faq-question:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .faq-question h4 {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .faq-question i {
+        color: rgba(255, 255, 255, 0.5);
+        transition: transform 0.3s ease;
+    }
+
+    .faq-item.active .faq-question i {
+        transform: rotate(180deg);
+        color: #00b894;
+    }
+
+    .faq-answer {
+        padding: 0 1.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item.active .faq-answer {
+        padding: 0 1.5rem 1.5rem;
+        max-height: 200px;
+    }
+
+    .faq-answer p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 992px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .faq-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="contact-section">
+    <div class="contact-hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-envelope"></i>
+                <span>CONTACT US</span>
+            </div>
+            <h1 class="main-title">Get in Touch</h1>
+            <p class="hero-subtitle">We're here to help! Reach out to us for any questions, support, or feedback about
+                our restaurant management system.</p>
+            <div class="quick-contact">
+                <div class="quick-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>+91 9363135589</span>
+                </div>
+                <div class="quick-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>dineatofficial@gmail.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="contact-grid">
+            <div class="contact-info-section">
+                <div class="section-header">
+                    <h2>📍 Contact Information</h2>
+                    <p>Multiple ways to reach us - choose what works best for you!</p>
+                </div>
+
+                <div class="contact-cards">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Visit Our Office</h3>
+                            <p>123 Restaurant Street<br>Food City, FC 12345<br>Karnataka, India</p>
+                            <a href="#" class="contact-link">
+                                <i class="fas fa-directions"></i>
+                                Get Directions
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Call Us</h3>
+                            <p>+91 9363135589</p>
+                            <a href="tel:+919363135589" class="contact-link">
+                                <i class="fas fa-phone"></i>
+                                Call Now
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Email Us</h3>
+                            <p>dineatofficial@gmail.com</p>
+                            <a href="mailto:dineatofficial@gmail.com" class="contact-link">
+                                <i class="fas fa-paper-plane"></i>
+                                Send Email
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="contact-details">
+                            <h3>Business Hours</h3>
+                            <p>Monday - Friday: 11:00 AM - 11:00 PM<br>Saturday - Sunday: 10:00 AM - 12:00 AM</p>
+                            <span class="status-badge">
+                                <i class="fas fa-circle"></i>
+                                Open Now
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-section">
+                    <h3>Connect With Us</h3>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/dineat.11?igsh=MXJqODN2Zjh2NTg0Nw==" target="_blank" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/dineat-undefined-1aa87a3b0?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" class="social-link">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://youtube.com/@dineat_11?si=Np9UVCtVoQ-26ADN" target="_blank" class="social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-section">
+                <div class="section-header">
+                    <h2>✉️ Send Us a Message</h2>
+                    <p>Fill out the form below and we'll get back to you within 24 hours.</p>
+                </div>
+
+                <div class="form-container">
+                    <form class="contact-form"
+                        onsubmit="event.preventDefault(); showNotification('Message sent successfully! We will get back to you soon!');">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Your Name *</label>
+                                <input type="text" id="name" name="name" placeholder="John Doe" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" placeholder="john@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+91 98765 43210">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Subject *</label>
+                            <select id="subject" name="subject" required>
+                                <option value="">Select a topic</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="support">Technical Support</option>
+                                <option value="sales">Sales & Pricing</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="partnership">Partnership</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message *</label>
+                            <textarea id="message" name="message" placeholder="Tell us how we can help you..."
+                                required></textarea>
+                        </div>
+
+                        <div class="form-options">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="newsletter" name="newsletter">
+                                <label for="newsletter">
+                                    <span class="checkmark"></span>
+                                    Subscribe to our newsletter for updates
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+
+                <div class="support-info">
+                    <div class="support-card">
+                        <div class="support-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="support-content">
+                            <h4>Need Immediate Help?</h4>
+                            <p>Our support team is available 24/7 to assist you with any urgent matters.</p>
+                            <a href="tel:+919876543210" class="support-btn">
+                                <i class="fas fa-phone-alt"></i>
+                                Call Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="section-header">
+                <h2>❓ Frequently Asked Questions</h2>
+                <p>Quick answers to common questions about DineAt.</p>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>How do I get started with DineAt?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Simply sign up for an account, choose your role (customer, kitchen staff, or admin), and
+                            start using our platform immediately.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Is DineAt available for mobile devices?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! DineAt is fully responsive and works seamlessly on all devices including smartphones,
+                            tablets, and desktops.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>What payment methods do you accept?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We accept all major credit/debit cards, UPI payments, digital wallets, and cash on delivery
+                            options.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>How secure is my data on DineAt?</h4>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We use industry-standard encryption and security measures to protect your data. All
+                            transactions are PCI compliant.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // FAQ Accordion Functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+
+            question.addEventListener('click', function () {
+                // Close all other FAQ items
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+
+                // Toggle current FAQ item
+                item.classList.toggle('active');
+            });
+        });
+
+        // Form validation and submission
+        const contactForm = document.querySelector('.contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function (e) {
+                // Note: The onsubmit="event.preventDefault(); ..." in HTML might override this, 
+                // but checking here for completeness.
+                // The HTML attribute handles the simulation.
+            });
+        }
+
+        // Phone number formatting
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function (e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 10) {
+                    value = value.slice(0, 10);
+                }
+
+                // Format as +91 XXXXX XXXXX
+                if (value.length > 0) {
+                    if (value.length <= 5) {
+                        e.target.value = '+91 ' + value;
+                    } else {
+                        e.target.value = '+91 ' + value.slice(0, 5) + ' ' + value.slice(5);
+                    }
+                } else {
+                    e.target.value = '';
+                }
+            });
+        }
+    });
+
+    // Simple notification substitute since we might not have the full script.js context for showNotification if it differs
+    // But base.html includes script.js so showNotification should be available.
+</script>
+{% endblock %}

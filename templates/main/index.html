@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}DineAt - Premium Restaurant Management System{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Fix font visibility issues */
+    body {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        color: #ffffff !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        color: #ffffff !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    p, span, div {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    .hero-text h1, .hero-text p {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        color: #ffffff !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    /* Hero Section */
+    .hero {
+        min-height: 120vh;
+        background-size: cover;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #233D4C;
+        pointer-events: none;
+    }
+
+    .hero-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 3rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5rem;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-text h1 {
+        font-size: 5.5rem;
+        font-weight: 800;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+        line-height: 1.1;
+    }
+
+    .hero-text p {
+        font-size: 1.5rem;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .hero-cta {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .btn {
+        padding: 1.2rem 2.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.2rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        color: #667eea;
+        box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 12px 35px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+        position: relative;
+        height: 500px;
+    }
+
+    .floating-cards {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .card {
+        position: absolute;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #2c3e50;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .card i {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .card-1 {
+        top: 20%;
+        left: 10%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .card-2 {
+        top: 30%;
+        right: 20%;
+        animation: float 8s ease-in-out infinite 2s;
+    }
+
+    .card-3 {
+        bottom: 20%;
+        left: 30%;
+        animation: float 7s ease-in-out infinite 1s;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    /* Features Section */
+    .features {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);
+        position: relative;
+    }
+
+    .features::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.05);
+        pointer-events: none;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-header h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 1rem;
+        text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .section-header p {
+        font-size: 1.3rem;
+        color: #ffffff;
+        font-weight: 400;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08), 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #1a365d;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12), 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(145deg, #667eea, #764ba2);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: rotate(10deg) scale(1.1);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .feature-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    .feature-content h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+
+    .feature-content p {
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+        line-height: 1.7;
+        font-size: 1.1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            text-align: center;
+            padding: 0 1.5rem;
+        }
+
+        .hero-text h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+        }
+
+        .hero-cta {
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-visual {
+            height: 300px;
+        }
+
+        .card {
+            padding: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1>Welcome to DineAt</h1>
+            <p class="hero-subtitle">Experience fine dining with our modern restaurant management system</p>
+            <div class="hero-cta">
+                
+                <a href="#features" class="btn btn-primary">
+                    <i class="fas fa-compass"></i>
+                    Explore Features
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-cards">
+                <div class="card card-1">
+                    <i class="fas fa-utensils"></i>
+                    <span>DineAt</span>
+                </div>
+               
+                <div class="card card-3">
+                    <i class="fas fa-heart"></i>
+                    <span>Quality</span>
+                </div> <br><br>
+                 <div class="card card-2">
+                    <i class="fas fa-star"></i>
+                    <span>Premium</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

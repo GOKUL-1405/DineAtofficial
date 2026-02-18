@@ -1,0 +1,399 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #233D4C !important;
+        color: white;
+    }
+
+    .edit-profile-page {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+    }
+
+    .edit-profile-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 25px;
+        padding: 2.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .edit-profile-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .edit-profile-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 0 0.5rem;
+    }
+
+    .edit-profile-header p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .form-section {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-section h3 {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin: 0 0 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.85rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+        outline: none;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #10b981;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-group select {
+        cursor: pointer;
+    }
+
+    .form-group select option {
+        background: #233D4C;
+        color: white;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #10b981;
+    }
+
+    .checkbox-group label {
+        margin: 0;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .profile-picture-section {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .current-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: white;
+        overflow: hidden;
+        margin: 0 auto 1rem;
+    }
+
+    .current-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-label {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .file-input-label:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .help-text {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.25rem;
+    }
+
+    @media (max-width: 768px) {
+        .edit-profile-card {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="edit-profile-page">
+    <div class="container">
+        <div class="edit-profile-card">
+            <div class="edit-profile-header">
+                <h1>✏️ Edit Profile</h1>
+                <p>Update your personal information and preferences</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="profile-picture-section">
+                    <div class="current-avatar">
+                        {% if profile.profile_picture %}
+                            <img src="/media/{{ profile.profile_picture }}" alt="{{ profile.full_name }}">
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="file-input-wrapper">
+                        <input type="file" name="profile_picture" id="profile_picture" accept="image/*">
+                        <label for="profile_picture" class="file-input-label">
+                            📷 Choose Profile Picture
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>👤 Personal Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="first_name">First Name</label>
+                            <input type="text" id="first_name" name="first_name" value="{{ profile.first_name }}" placeholder="Enter your first name">
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" value="{{ profile.last_name }}" placeholder="Enter your last name">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone_number">Phone Number</label>
+                            <input type="tel" id="phone_number" name="phone_number" value="{{ user.phone_number }}" placeholder="Enter your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label for="date_of_birth">Date of Birth</label>
+                            <input type="date" id="date_of_birth" name="date_of_birth" value="{{ profile.date_of_birth|date:'Y-m-d' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>📍 Address Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="address_line1">Address Line 1</label>
+                            <input type="text" id="address_line1" name="address_line1" value="{{ profile.address_line1 }}" placeholder="Street address">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="address_line2">Address Line 2</label>
+                            <input type="text" id="address_line2" name="address_line2" value="{{ profile.address_line2 }}" placeholder="Apartment, suite, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" value="{{ profile.city }}" placeholder="City">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" id="state" name="state" value="{{ profile.state }}" placeholder="State">
+                        </div>
+                        <div class="form-group">
+                            <label for="postal_code">Postal Code</label>
+                            <input type="text" id="postal_code" name="postal_code" value="{{ profile.postal_code }}" placeholder="Postal code">
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country</label>
+                            <input type="text" id="country" name="country" value="{{ profile.country }}" placeholder="Country">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>⚙️ Preferences</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="preferred_language">Preferred Language</label>
+                            <select id="preferred_language" name="preferred_language">
+                                <option value="en" {% if profile.preferred_language == 'en' %}selected{% endif %}>English</option>
+                                <option value="ta" {% if profile.preferred_language == 'ta' %}selected{% endif %}>Tamil</option>
+                                <option value="hi" {% if profile.preferred_language == 'hi' %}selected{% endif %}>Hindi</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="dietary_preferences">Dietary Preferences</label>
+                            <textarea id="dietary_preferences" name="dietary_preferences" placeholder="e.g., Vegetarian, Vegan, Gluten-free">{{ profile.dietary_preferences }}</textarea>
+                            <p class="help-text">Separate multiple preferences with commas</p>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="food_allergies">Food Allergies</label>
+                            <textarea id="food_allergies" name="food_allergies" placeholder="List any food allergies">{{ profile.food_allergies }}</textarea>
+                            <p class="help-text">Separate multiple allergies with commas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🔔 Notification Preferences</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="email_notifications" name="email_notifications" {% if profile.email_notifications %}checked{% endif %}>
+                        <label for="email_notifications">Email Notifications</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="sms_notifications" name="sms_notifications" {% if profile.sms_notifications %}checked{% endif %}>
+                        <label for="sms_notifications">SMS Notifications</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="promotional_emails" name="promotional_emails" {% if profile.promotional_emails %}checked{% endif %}>
+                        <label for="promotional_emails">Promotional Emails</label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Changes
+                    </button>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                        ❌ Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

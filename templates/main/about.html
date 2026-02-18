@@ -1,0 +1,746 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - DineAt{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* About Section */
+    .about-section {
+        padding: 100px 0 50px;
+        min-height: 100vh;
+        background: #233D4C;
+        position: relative;
+    }
+
+    /* Clean text styling */
+    .about-section h1,
+    .about-section h2,
+    .about-section h3,
+    .about-section h4,
+    .about-section p,
+    .about-section li,
+    .about-section span,
+    .about-section div {
+        color: white !important;
+        font-weight: 600;
+    }
+
+    .about-section h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: white !important;
+        margin-bottom: 2rem;
+    }
+
+    .about-section h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white !important;
+        margin-bottom: 1.5rem;
+    }
+
+    .about-section h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white !important;
+        margin-bottom: 1rem;
+    }
+
+    .about-section p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white !important;
+        margin-bottom: 1rem;
+    }
+
+    /* Hero Section */
+    .about-hero {
+        padding: 120px 0 80px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: #ff6b6b;
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        animation: pulse-badge 2s infinite;
+    }
+
+    .main-title {
+        font-size: 4rem;
+        font-weight: 900;
+        color: white;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem 2rem;
+        border-radius: 20px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-item:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: white;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Container */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Section Headers */
+    .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .section-header p {
+        color: white;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Story Section */
+    .story-section {
+        margin-bottom: 5rem;
+    }
+
+    .story-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .story-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .story-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #667eea;
+        transform: scaleX(0);
+    }
+
+    .story-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .story-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .story-icon {
+        width: 60px;
+        height: 60px;
+        background: #667eea;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .story-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .story-card:hover .story-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .story-text h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .story-text p {
+        color: white;
+        line-height: 1.7;
+    }
+
+    /* Mission Section */
+    .mission-section {
+        margin-bottom: 5rem;
+    }
+
+    .mission-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .mission-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mission-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #00b894;
+        transform: scaleX(0);
+    }
+
+    .mission-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .mission-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .mission-icon {
+        width: 60px;
+        height: 60px;
+        background: #00b894;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+    }
+
+    .mission-card:hover .mission-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .mission-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .mission-content h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.8rem;
+    }
+
+    .mission-content p {
+        color: white;
+        line-height: 1.6;
+    }
+
+    /* Features Section */
+    .features-section {
+        margin-bottom: 5rem;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #e74c3c;
+        transform: scaleX(0);
+    }
+
+    .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: #e74c3c;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .feature-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .feature-content h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .feature-content p {
+        color: white;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 0.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+
+    .feature-list i {
+        color: #27ae60;
+        font-size: 1rem;
+    }
+
+    /* Values Section */
+    .values-section {
+        margin-bottom: 5rem;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .value-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .value-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #f39c12;
+        transform: scaleX(0);
+    }
+
+    .value-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .value-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .value-icon {
+        width: 60px;
+        height: 60px;
+        background: #f39c12;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 8px 25px rgba(243, 156, 18, 0.3);
+    }
+
+    .value-card:hover .value-icon {
+        transform: rotate(10deg) scale(1.1);
+    }
+
+    .value-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+    .value-card h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .value-card p {
+        color: white;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="about-section">
+    <div class="about-hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <i class="fas fa-utensils"></i>
+                    <span>ABOUT DINEAT</span>
+                </div>
+                <h1 class="main-title">Revolutionizing Restaurant Management</h1>
+                <p class="hero-subtitle">Experience the future of dining with our innovative digital platform that
+                    connects customers, kitchen staff, and management seamlessly.</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">2026</div>
+                        <div class="stat-label">Founded</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Restaurants</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Happy Users</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="story-section">
+            <div class="section-header">
+                <h1>📖 Our Story</h1>
+                <p>Born from a passion for exceptional dining experiences, DineAt emerged in 2024 as the answer to
+                    modern restaurant challenges.</p>
+            </div>
+
+            <div class="story-content">
+                <div class="story-card">
+                    <div class="story-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="story-text">
+                        <h3>The Beginning</h3>
+                        <p>Founded by restaurant industry veterans who understood the pain points of traditional dining
+                            management systems.</p>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="story-text">
+                        <h3>The Innovation</h3>
+                        <p>We pioneered a unified platform that brings together customers, kitchen staff, and management
+                            in one seamless ecosystem.</p>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="story-text">
+                        <h3>The Success</h3>
+                        <p>Today, we serve over 500 restaurants and 50,000+ happy users who trust our platform daily.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mission-section">
+            <div class="section-header">
+                <h1>🎯 Our Mission</h1>
+                <p>Creating exceptional dining experiences through innovative technology.</p>
+            </div>
+
+            <div class="mission-grid">
+                <div class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="mission-content">
+                        <h3>Customer-Centric</h3>
+                        <p>Putting diners first with intuitive interfaces and seamless experiences.</p>
+                    </div>
+                </div>
+
+                <div class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-chef-hat"></i>
+                    </div>
+                    <div class="mission-content">
+                        <h3>Kitchen-Efficient</h3>
+                        <p>Streamlining kitchen operations with real-time order management.</p>
+                    </div>
+                </div>
+
+                <div class="mission-card">
+                    <div class="mission-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="mission-content">
+                        <h3>Management-Smart</h3>
+                        <p>Empowering restaurant owners with data-driven insights.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-section">
+            <div class="section-header">
+                <h1>why Choose DineAt?</h1>
+                <p>Discover the features that make us the preferred choice for modern restaurants.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Smart Table Booking</h3>
+                        <p>Intuitive table reservation system with real-time availability updates.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Visual table selection</li>
+                            <li><i class="fas fa-check"></i> Instant confirmations</li>
+                            <li><i class="fas fa-check"></i> Mobile optimized</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Digital Menu</h3>
+                        <p>Interactive menu browsing with rich media and detailed descriptions.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> High-quality images</li>
+                            <li><i class="fas fa-check"></i> Real-time updates</li>
+                            <li><i class="fas fa-check"></i> Easy ordering</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-kitchen-set"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Kitchen Display</h3>
+                        <p>Real-time order management for efficient kitchen operations.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Order tracking</li>
+                            <li><i class="fas fa-check"></i> Priority management</li>
+                            <li><i class="fas fa-check"></i> Status updates</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Secure Payments</h3>
+                        <p>Multiple payment options with bank-level security.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Multiple methods</li>
+                            <li><i class="fas fa-check"></i> PCI compliant</li>
+                            <li><i class="fas fa-check"></i> Instant processing</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Analytics Dashboard</h3>
+                        <p>Comprehensive insights for data-driven decisions.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Real-time metrics</li>
+                            <li><i class="fas fa-check"></i> Revenue tracking</li>
+                            <li><i class="fas fa-check"></i> Customer insights</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Reviews & Ratings</h3>
+                        <p>Build trust through transparent customer feedback.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Customer reviews</li>
+                            <li><i class="fas fa-check"></i> Rating system</li>
+                            <li><i class="fas fa-check"></i> Feedback management</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="values-section">
+            <div class="section-header">
+                <h1>Our Values </h1>
+                <p>The principles that guide everything we do.</p>
+            </div>
+
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Passion</h3>
+                    <p>We love what we do and are committed to excellence.</p>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Trust</h3>
+                    <p>Building lasting relationships through reliability and transparency.</p>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Innovation</h3>
+                    <p>Constantly pushing boundaries to create better solutions.</p>
+                </div>
+
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Partnership</h3>
+                    <p>Working together with restaurants for mutual success.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
